@@ -1,0 +1,9 @@
+#compilador
+FC = gfortran
+
+#subrutinas source
+SUBRUTINAS = CALCULO_RHS.f90 WPENS.f90 THOMAS.f90 CC.f90 \
+RIGHT_HAND_SIDE.f90 PREDICCION_VELOCIDAD.f90 TDMA_PHI.f90 
+
+all: $(SUBRUTINAS)
+	$(FC) $(SUBRUTINAS) -c
