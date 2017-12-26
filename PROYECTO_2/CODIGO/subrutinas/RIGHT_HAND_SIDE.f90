@@ -2,7 +2,7 @@
 !		primer paso para u		
 !		primer paso para v
 
-subroutine RIGHT_HAND_SIDE(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,RHS_y,RHS_x)
+subroutine RIGHT_HAND_SIDE(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,RHS_u,RHS_v)
 
 	implicit none
 
@@ -37,9 +37,9 @@ subroutine RIGHT_HAND_SIDE(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,RHS_y,RHS_x)
 
 	integer,intent(in)::nx,ny
 	real(kind=8),intent(in)::dx,dy,dt,Re
-	real(kind=8),dimension(nx+2,ny+2),intent(in):: &
+	real(kind=8),dimension(ny+2,nx+2),intent(in):: &
 		& P , u_1 , u_0 , v_1 , v_0
-	real(kind=8),dimension(nx*ny),intent(out):: RHS_x,RHS_y
+	real(kind=8),dimension(nx*ny),intent(out):: RHS_u,RHS_v
 	
 	!variable locales
 	integer	:: i,j,contador
@@ -55,9 +55,9 @@ subroutine RIGHT_HAND_SIDE(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,RHS_y,RHS_x)
 	contador = 0
 	
 !	recorre en direccion y (fila)
-	do i=2,nx+1
+	do i=2,ny+1
 !		recorre en direccion x (columna)
-		do j=2,ny+1
+		do j=2,nx+1
 		
 			contador = contador + 1
 				
@@ -80,7 +80,7 @@ subroutine RIGHT_HAND_SIDE(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,RHS_y,RHS_x)
 				& u_W,u_E,u_S,u_N,u_P,&
 				& u0_W,u0_E,u0_S,u0_N,u0_P,&
 				& P_W,P_E,dx,dy,dx,dt,Re,RHS)
-			RHS_x(contador) = RHS
+			RHS_u(contador) = RHS
 			
 !			CALCULO DE RHS EN DIRECCION X PARA V
 			call CALCULO_RHS(&
@@ -89,7 +89,7 @@ subroutine RIGHT_HAND_SIDE(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,RHS_y,RHS_x)
 				& v_W,v_E,v_S,v_N,v_P,&
 				& v0_W,v0_E,v0_S,v0_N,v0_P,&
 				& P_S,P_N,dx,dy,dx,dt,Re,RHS)
-			RHS_y(contador) = RHS			
+			RHS_v(contador) = RHS			
 			
 !		fin do direccion x (columna)
 		end do
