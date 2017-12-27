@@ -5,7 +5,7 @@
 
 !:::::::::::::::::::::::::::::::::::::::::::::
 
-subroutine  CALCULO_RHS(&
+subroutine  CALCULO_RHS_2(&
 		& u_W,u_E,u_P,v_N,v_S,v_P, &
 		& u0_W,u0_E,u0_P,v0_N,v0_S,v0_P, &
 		& phi_W,phi_E,phi_S,phi_N,phi_P,&

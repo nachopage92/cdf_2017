@@ -49,18 +49,18 @@ subroutine TDMA_PHI(nx,ny,dx,dy,dt,u,v,phi,R)
 			contador = contador + 1
 			 
 			B = 3._8/(2._8*dt)*(  &
-			&u(i,j+1)-u(i,j)+ &
-			&v(i,j)-v(i-1,j) )
+			& ( u(i,j+1)-u(i,j) )*dy + &
+			& ( v(i,j)-v(i-1,j) )*dx )
 
-			RHS_x(contador) = B - &
-			& (dx/dy)*phi_(i+1,j) - &
+			RHS_x(contador) = - B + &
+			& (dx/dy)*phi_(i+1,j) + &
 			& (dx/dy)*phi_(i-1,j)
 	 
 		end do 
 		
-		diagx_1 = dy/dx
-		diagx_2 = -2._8*( dy/dx + dx/dy )
-		diagx_3 = dy/dx	
+		diagx_1 = -dy/dx
+		diagx_2 = 2._8*( dy/dx + dx/dy )
+		diagx_3 = -dy/dx	
 		
 !			resuelve phi en cada fila
 
@@ -89,18 +89,18 @@ subroutine TDMA_PHI(nx,ny,dx,dy,dt,u,v,phi,R)
 			contador = contador + 1
 			 
 			B = 3._8/(2._8*dt)*(  &
-			&u(i,j+1)-u(i,j)+ &
-			&v(i,j)-v(i-1,j) )
+			& ( u(i,j+1)-u(i,j) )*dy + &
+			& ( v(i,j)-v(i-1,j) )*dx )
 
-			RHS_y(contador) = B - &
-			& (dx/dy)*phi_(i+1,j) - &
-			& (dx/dy)*phi_(i-1,j)
+			RHS_y(contador) = - B + &
+			& (dy/dx)*phi_(i,j+1) + &
+			& (dy/dx)*phi_(i,j-1)
 	 
 		end do 
 		
-		diagy_1 = dx/dy
-		diagy_2 = -2._8*( dy/dx + dx/dy )
-		diagy_3 = dx/dy	
+		diagy_1 = -dx/dy
+		diagy_2 = 2._8*( dy/dx + dx/dy )
+		diagy_3 = -dx/dy	
 		
 !			resuelve phi en cada columna
 		call thomas(ny-2,diagy_1,diagy_2,diagy_3,phi_y,RHS_y)
@@ -114,6 +114,7 @@ subroutine TDMA_PHI(nx,ny,dx,dy,dt,u,v,phi,R)
 !-----------------------------------------------------------		
 
 	!CALCULO DE RESTO R (CONVERGENCIA)
+	
 	contador = 0
 	
 	do i=3,ny
@@ -123,14 +124,14 @@ subroutine TDMA_PHI(nx,ny,dx,dy,dt,u,v,phi,R)
 			contador = contador + 1
 			
 			B = 3._8/(2._8*dt)*(  &
-			&u(i,j+1)-u(i,j)+ &
-			&v(i,j)-v(i-1,j) )
+			& ( u(i,j+1)-u(i,j) )*dy+ &
+			& ( v(i,j)-v(i-1,j) )*dx )
 			
 			R_vec(contador) = &
-			& dx/dy*(phi(i+1,j)+phi(i-1,j)) &
-			& -2._8*(dx/dy+dy/dx)*phi(i,j) &  
-			& + dy/dx*(phi(i,j+1)+phi(i,j-1)) &
-			& - B
+			& -dx/dy*(phi(i+1,j)+phi(i-1,j)) &
+			& + 2._8*(dx/dy+dy/dx)*phi(i,j) &  
+			& - dy/dx*(phi(i,j+1)+phi(i,j-1)) &
+			& + B
 			
 		end do
 		

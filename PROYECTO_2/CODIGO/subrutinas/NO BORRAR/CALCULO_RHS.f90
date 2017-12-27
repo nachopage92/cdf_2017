@@ -1,7 +1,7 @@
 !:::::::::::::::::::::::::::::::::::::::::::::
 
 !	CALCULO DE RHS UTILIZANDO DISCRETIZACION
-!	PROPUESTA POR RAITHBY
+!	PROPUESTA POR PATANKAR
 
 !:::::::::::::::::::::::::::::::::::::::::::::
 
@@ -47,7 +47,6 @@ subroutine  CALCULO_RHS(&
 		& h_W,h_E,h_S,h_N,h_P, &
 		& h0_W,h0_E,h0_S,h0_N,h0_P, &
 		& g_W,g_E,g_S,g_N,g_P, &
-		& alfa_w,alfa_e,alfa_n,alfa_s, &
 		& H,H0,G,dP
 
 !:::::::::::::::::::::::::::::::::::::::::::::
@@ -68,19 +67,19 @@ subroutine  CALCULO_RHS(&
 !:::::::::::::::::::::::::::::::::::::::::::::
 		
 !			CALCULO DE LA DIFUSION
-		D_w = (1._8/Re) * (dy/dx)
-		D_e = (1._8/Re) * (dy/dx)
-		D_n = (1._8/Re) * (dx/dy)
-		D_s = (1._8/Re) * (dx/dy)
+		D_w = dy/Re
+		D_e = dy/Re
+		D_n = dx/Re
+		D_s = dx/Re
 		D_p = -( D_w + D_e + D_n + D_s )
 					
 !:::::::::::::::::::::::::::::::::::::::::::::
 			
 !			CALCULO DEL NUMERO DE PECLET
-		Pe_w = F_w*Re*dx
-		Pe_e = F_e*Re*dx
-		Pe_n = F_n*Re*dy
-		Pe_s = F_s*Re*dy
+		Pe_w = F_w/D_w
+		Pe_e = F_e/D_e
+		Pe_n = F_n/D_n
+		Pe_s = F_s/D_s
 			
 !:::::::::::::::::::::::::::::::::::::::::::::
 		
@@ -99,21 +98,11 @@ subroutine  CALCULO_RHS(&
 			
 !:::::::::::::::::::::::::::::::::::::::::::::
 			
-!			COEFICIENTES ALFA
-
-		alfa_w = Pe_w**2._8/(10._8+2._8*Pe_w**2._8)
-		alfa_e = Pe_e**2._8/(10._8+2._8*Pe_e**2._8)
-		alfa_s = Pe_s**2._8/(10._8+2._8*Pe_s**2._8)
-		alfa_n = Pe_n**2._8/(10._8+2._8*Pe_n**2._8)
-
-!:::::::::::::::::::::::::::::::::::::::::::::
-			
 !			COEFICIENTES DE LA DIFUSION
-
-		g_W = D_w * ( 1._8 + Pe_w*(alfa_w-0.5_8) )
-		g_E = D_e * ( 1._8 + Pe_e*(alfa_e-0.5_8) )
-		g_S = D_s * ( 1._8 + Pe_s*(alfa_s-0.5_8) )
-		g_N = D_n * ( 1._8 + Pe_n*(alfa_n-0.5_8) )
+		g_W = max(0._8,( 1._8 - 0.1_8*abs(Pe_w) )**5._8)
+		g_E = max(0._8,( 1._8 - 0.1_8*abs(Pe_w) )**5._8)
+		g_S = max(0._8,( 1._8 - 0.1_8*abs(Pe_w) )**5._8)
+		g_N = max(0._8,( 1._8 - 0.1_8*abs(Pe_w) )**5._8)
 		g_p = -( g_W + g_E + g_S + g_N )
 		
 !:::::::::::::::::::::::::::::::::::::::::::::
