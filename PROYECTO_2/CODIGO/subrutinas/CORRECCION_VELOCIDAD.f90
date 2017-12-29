@@ -15,14 +15,14 @@ subroutine CORRECCION_VELOCIDAD(nx,ny,dx,dy,dt,u_pred,v_pred,phi,u_0,u_1,v_0,v_1
 		
 	do i=2,ny+1
 		do j=3,nx+1
-			u_1(i,j) = u_pred(i,j) - dt*(phi(i,j)-phi(i,j-1))/dx
+			u_1(i,j) = u_pred(i,j) - (dt/dx)*(phi(i,j)-phi(i,j-1))
 		end do
 	end do
 	
 	
 	do i=2,ny
 		do j=3,nx+1
-			v_1(i,j) = v_pred(i,j) - dt*(phi(i+1,j)-phi(i,j))/dy
+			v_1(i,j) = v_pred(i,j) - (dt/dy)*(phi(i+1,j)-phi(i,j))
 		end do
 	end do
 	

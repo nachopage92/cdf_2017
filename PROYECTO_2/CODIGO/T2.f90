@@ -60,11 +60,12 @@ program T2_CDF_2017_2S
 			real(kind=8),dimension((nx+2),(ny+2)),intent(inout) :: u_0,u_1,v_0,v_1
 		end subroutine
 		
-		subroutine CALCULO_CONVERGENCIA(nx,ny,dx,dy,u,v,phi,CDM_vol)
+		subroutine CALCULO_CONVERGENCIA(nx,ny,dx,dy,dt,u,v,phi,CDM)
+			implicit none
 			integer,intent(in) :: nx,ny
-			real(kind=8),intent(in) :: dx,dy
+			real(kind=8),intent(in) :: dx,dy,dt
 			real(kind=8),dimension((nx+2),(ny+2)),intent(in) :: u,v,phi
-			real(kind=8),dimension(nx,ny),intent(out):: CDM_vol
+			real(kind=8),intent(out):: CDM
 		end subroutine
 
 	END INTERFACE
@@ -73,11 +74,11 @@ program T2_CDF_2017_2S
 		&info_TDMA,info_ITER,criterio2_TDMA,criterio2_convergencia
 	
 	real(kind=8) :: Lx,Ly,dx,dy,u_init,rho,RHS,gama,dt,Re,&
-		& criterio1_TDMA,T,criterio1_convergencia,R
+		& criterio1_TDMA,T,criterio1_convergencia,R,CFL,CDM
 	
 	real(kind=8),allocatable :: x_1(:),x_2(:),y_1(:),y_2(:),&
 		& u_0(:,:),v_0(:,:),u_1(:,:),v_1(:,:),P(:,:),&
-		& RHS_u(:),RHS_v(:),phi(:,:),CDM_vol(:,:),&
+		& RHS_u(:),RHS_v(:),phi(:,:),&
 		& u_pred(:,:),v_pred(:,:)
 	
 	
@@ -87,8 +88,8 @@ program T2_CDF_2017_2S
 !	PARAMETROS
 
 !	DIMENSION TUBERIA
-	Lx = 400._8
-	Ly = 100._8
+	Lx = 4._8
+	Ly = 1._8
 	
 !	NUMERO DE VOLUMENES
 !		(no considera nodos ficticios))
@@ -96,17 +97,17 @@ program T2_CDF_2017_2S
 	ny = 10
 	num_volumenes = ny*nx
 	
-!	PASO DE TIEMPO
-	dt = 0.1_8
-	T = 10._8
-	nt = T/dt
+!!	PASO DE TIEMPO
+!	dt = 0.1_8
+!	T = 10._8
+!	nt = T/dt
 	
 !	NUMERO DE REYNOLDS
-	Re = 500._8
+	Re = 2000._8
 !	DENSIDAD
 	rho = 1d3
 !	VISCOSIDAD
-	gama = 1d-2
+	gama = 1.5_8
 		
 !	CRITERIO RUTINA TDMA_PHI
 	criterio1_TDMA = 1d-3	! criterio1 -> max(RESTO)
@@ -114,7 +115,7 @@ program T2_CDF_2017_2S
 	
 !	CRITERIO CONVERGENCIA
 	criterio1_convergencia = 1d-3 ! crit_conver -> max(eq_cdm_vol)
-	criterio2_convergencia = 100
+	criterio2_convergencia = 20
 	
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 	
@@ -141,50 +142,82 @@ program T2_CDF_2017_2S
 	dx = Lx/dfloat(nx)
 	dy = Ly/dfloat(ny)	
 
+
+
 !	VELOCIDAD ENTRADA
-	u_init = Re*(gama/rho)/dx
+	u_init = Re*gama/(rho*Ly)
+
+!	PASO DE TIEMPO
+	CFL = 1._8
+	dt = CFL * dx / u_init
+	T = 10._8
+	nt = T/dt
+
 
 !	MALLA PRINCIPAL ( x_1 , y_1 )
 	allocate(x_1(ny+2),y_1(nx+2))
 	x_1 = (/ ( (dfloat(i)-1.0_8)*dx,i=0,nx+1 ) /)
 	y_1 = (/ ( (dfloat(i)-1.0_8)*dy,i=0,ny+1 ) /) 
 
+
+
 !	MALLA SECUNDARIA ( x_2 , y_2 )
 	allocate(x_2(ny+2),y_2(nx+2))
 	x_2 = (/ ( (dfloat(i)-0.5_8)*dx,i=0,nx+1 ) /)
 	y_2 = (/ ( (dfloat(i)-0.5_8)*dy,i=0,ny+1 ) /)
 
+
+
 !	VELOCIDAD INICIAL
 !		en t_(n)
 	allocate(u_0(ny+2,nx+2),v_0(ny+2,nx+2))
-	u_0 = 0.0_8
-	v_0 = 0.0_8
+	u_0 = u_init*0.5_8
+	v_0 = 0._8
 !		en t_(n+1)
 	allocate(u_1(ny+2,nx+2),v_1(ny+2,nx+2))
-	u_1 = 0.0_8
-	v_1 = 0.0_8
+	u_1 = u_init*0.5_8
+	v_1 = 0._8
+
+!!	VELOCIDAD INICIAL
+!!		en t_(n)
+!	allocate(u_0(ny+2,nx+2),v_0(ny+2,nx+2))
+!	u_0 = 0.0_8
+!	v_0 = 0.0_8
+!!		en t_(n+1)
+!	allocate(u_1(ny+2,nx+2),v_1(ny+2,nx+2))
+!	u_1 = 0.0_8
+!	v_1 = 0.0_8
+
+
 
 !	CAMPO DE PRESION INICIAL
 !		en t_(n)
 	allocate(P(ny+2,nx+2))
 	P = 0.0_8
 	
+	
+	
 !	FUNCION AUXILIAR PHI
 	allocate(phi(ny+2,nx+2))
 	phi = 0.0_8
+	
+	
 	
 !	IMPOSICION DE LAS CONDICIONES DE CONTORNO
 	call CC(nx,ny,u_0,u_1,v_0,v_1,phi,u_init)
 
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-	allocate(CDM_vol(ny,nx),u_pred(ny+2,nx+2),v_pred(ny+2,nx+2))
+!			INICIO INTEGRACION TEMPORAL
 
-!HACE UN DO.... QUE SIGNIFICA CADA ITERACION?
+	allocate(u_pred(ny+2,nx+2),v_pred(ny+2,nx+2))
+	u_pred = 0._8
+	v_pred = 0._8
+
 
 	info_ITER = 0
 
-	do k = 1,10
+	do k = 1,5
 
 		niter = 0
 
@@ -198,6 +231,8 @@ program T2_CDF_2017_2S
 
 			call PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pred)
 			
+			return
+						
 		!	RESOLUCION DE LA ECUACION DE POISSON PARA LA PRESION
 
 			contador = 0
@@ -207,47 +242,43 @@ program T2_CDF_2017_2S
 				call TDMA_PHI(nx,ny,dx,dy,dt,u_pred,v_pred,phi,R)
 				if ( R .lt. criterio1_TDMA .or. contador .gt. criterio2_TDMA ) then
 					info_TDMA = 1
-				end if
+				end if	
 			end do
-			
 			info_TDMA = 0
-			
+
 		!	CORRECCION DEL CAMPO DE VELOCIDAD Y PRESION
 
 			call CORRECCION_PRESION(nx,ny,dx,dy,P,phi,u_pred,v_pred)
-						
+								
 		!	VERIFICAR CONVERGENCIA DE LAS VARIABLES
 
-			call CALCULO_CONVERGENCIA(nx,ny,dx,dy,u_pred,v_pred,phi,CDM_vol)
-							
-			if ( maxval(CDM_vol) .lt. criterio1_convergencia .or. & 
+			call CALCULO_CONVERGENCIA(nx,ny,dx,dy,dt,u_pred,v_pred,phi,CDM)
+									
+			if ( CDM .lt. criterio1_convergencia .or. & 
 				& niter .gt. criterio2_convergencia ) then
 				info_ITER = 1
 			end if
 
+			print*, CDM	
+
 		end do
+
+
+		return
+			
+!:::::::::::::::::::::::::::::::::::::::::::::::::::::
 	
 		info_ITER=0
-		write(1,*) CDM_vol
-		write(1,*)
-		
-!!:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	
+			
+!			CORRECCION DE LA VELOCIDAD
+			
 		call CORRECCION_VELOCIDAD(nx,ny,dx,dy,dt,u_pred,v_pred,phi,u_0,u_1,v_0,v_1)	
 		call CC(nx,ny,u_0,u_1,v_0,v_1,phi,u_init)
+
 		
 	end do
-
-	do i=1,ny+2
-		write(100,*) u_1(i,:)
-	end do
 	
-	do i=1,ny+2
-		write(200,*) v_1(i,:)
-	end do
 	
-	return
-
 
 !!:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 

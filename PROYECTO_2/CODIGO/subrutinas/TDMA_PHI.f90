@@ -48,7 +48,7 @@ subroutine TDMA_PHI(nx,ny,dx,dy,dt,u,v,phi,R)
 			
 			contador = contador + 1
 			 
-			B = 3._8/(2._8*dt)*(  &
+			B = 3._8/(2._8*dt)*(&
 			& ( u(i,j+1)-u(i,j) )*dy + &
 			& ( v(i,j)-v(i-1,j) )*dx )
 
@@ -71,8 +71,6 @@ subroutine TDMA_PHI(nx,ny,dx,dy,dt,u,v,phi,R)
 		phi_(i,3:nx) = phi_x(:)
 				
 	end do
-
-	phi = phi_
 
 !-----------------------------------------------------------		
 
@@ -110,6 +108,8 @@ subroutine TDMA_PHI(nx,ny,dx,dy,dt,u,v,phi,R)
 		phi_(3:ny,j) = phi_y(:)
 		
 	end do
+	
+	phi = phi_
 
 !-----------------------------------------------------------		
 
@@ -136,7 +136,7 @@ subroutine TDMA_PHI(nx,ny,dx,dy,dt,u,v,phi,R)
 		end do
 		
 	end do
-	
+			
 	R = sum(abs(R_vec))
 
 end subroutine

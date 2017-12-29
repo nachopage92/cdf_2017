@@ -1,11 +1,14 @@
-subroutine CALCULO_CONVERGENCIA(nx,ny,dx,dy,u,v,phi,CDM_vol)
+subroutine CALCULO_CONVERGENCIA(nx,ny,dx,dy,dt,u,v,phi,CDM)
 
+	implicit none
+	
 	integer,intent(in) :: nx,ny
-	real(kind=8),intent(in) :: dx,dy
+	real(kind=8),intent(in) :: dx,dy,dt
 	real(kind=8),dimension((nx+2),(ny+2)),intent(in) :: u,v,phi
-	real(kind=8),dimension(nx,ny),intent(out):: CDM_vol
+	real(kind=8),intent(out):: CDM
 	
 	integer :: i,j
+	real(kind=8),dimension(nx,ny):: CDM_vol
 	
 	do i=2,nx+1
 		do j=2,ny+1
@@ -15,5 +18,7 @@ subroutine CALCULO_CONVERGENCIA(nx,ny,dx,dy,u,v,phi,CDM_vol)
 				& - dt*(phi(i+1,j)-2._8*phi(i,j)+phi(i-1,j))*(dx/dy)
 		end do
 	end do
+	
+	CDM = sum( abs(CDM_vol) )
 
 end subroutine
