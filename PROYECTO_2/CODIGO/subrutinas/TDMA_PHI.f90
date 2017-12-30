@@ -137,6 +137,6 @@ subroutine TDMA_PHI(nx,ny,dx,dy,dt,u,v,phi,R)
 		
 	end do
 			
-	R = sum(abs(R_vec))
+	R = maxval(abs(R_vec))
 
 end subroutine

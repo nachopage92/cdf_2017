@@ -15,12 +15,11 @@ program T2_CDF_2017_2S
 			double precision,dimension(n),intent(out)	:: x
 		end subroutine
 		
-		subroutine CC(nx,ny,u_0,u_1,v_0,v_1,phi,u_init)
+		subroutine CC(nx,ny,u,v,u_init)
 			implicit none
 			integer,intent(in)	:: nx,ny
 			real(kind=8),intent(in)	:: u_init
-			real(kind=8),dimension(:,:),intent(inout)	:: &
-				&u_0,u_1,v_0,v_1,phi
+			real(kind=8),dimension(:,:),intent(inout) :: u,v
 		end subroutine
 		
 		subroutine PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pred)
@@ -74,7 +73,7 @@ program T2_CDF_2017_2S
 		&info_TDMA,info_ITER,criterio2_TDMA,criterio2_convergencia
 	
 	real(kind=8) :: Lx,Ly,dx,dy,u_init,rho,RHS,gama,dt,Re,&
-		& criterio1_TDMA,T,criterio1_convergencia,R,CFL,CDM
+		& criterio1_TDMA,T,criterio1_convergencia,R,CFL,CDM,aux
 	
 	real(kind=8),allocatable :: x_1(:),x_2(:),y_1(:),y_2(:),&
 		& u_0(:,:),v_0(:,:),u_1(:,:),v_1(:,:),P(:,:),&
@@ -88,12 +87,12 @@ program T2_CDF_2017_2S
 !	PARAMETROS
 
 !	DIMENSION TUBERIA
-	Lx = 4._8
+	Lx = 2._8
 	Ly = 1._8
 	
 !	NUMERO DE VOLUMENES
 !		(no considera nodos ficticios))
-	nx = 40
+	nx = 20
 	ny = 10
 	num_volumenes = ny*nx
 	
@@ -171,40 +170,32 @@ program T2_CDF_2017_2S
 !	VELOCIDAD INICIAL
 !		en t_(n)
 	allocate(u_0(ny+2,nx+2),v_0(ny+2,nx+2))
-	u_0 = u_init*0.5_8
+	do i=1,ny+2	
+		u_0(i,:) = (/ (0.1_8*u_init*(nx+2-j)*(i-1)/((ny+2)*(nx+2)),j=1,nx+2) /)
+	end do
+!	u_0 = 0._8
 	v_0 = 0._8
 !		en t_(n+1)
 	allocate(u_1(ny+2,nx+2),v_1(ny+2,nx+2))
-	u_1 = u_init*0.5_8
+	do i=1,ny+2	
+		u_1(i,:) = (/ (0.1_8*u_init*(nx+2-j)*(i-1)/((ny+2)*(nx+2)),j=1,nx+2) /)
+	end do
+!	u_1 = 0._8
 	v_1 = 0._8
-
-!!	VELOCIDAD INICIAL
-!!		en t_(n)
-!	allocate(u_0(ny+2,nx+2),v_0(ny+2,nx+2))
-!	u_0 = 0.0_8
-!	v_0 = 0.0_8
-!!		en t_(n+1)
-!	allocate(u_1(ny+2,nx+2),v_1(ny+2,nx+2))
-!	u_1 = 0.0_8
-!	v_1 = 0.0_8
-
-
-
+	
 !	CAMPO DE PRESION INICIAL
 !		en t_(n)
 	allocate(P(ny+2,nx+2))
-	P = 0.0_8
-	
-	
-	
+	P = 0._8
+
 !	FUNCION AUXILIAR PHI
 	allocate(phi(ny+2,nx+2))
 	phi = 0.0_8
-	
-	
-	
+		
 !	IMPOSICION DE LAS CONDICIONES DE CONTORNO
-	call CC(nx,ny,u_0,u_1,v_0,v_1,phi,u_init)
+	call CC(nx,ny,u_0,v_0,u_init)
+	call CC(nx,ny,u_1,v_1,u_init)
+
 
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -230,9 +221,14 @@ program T2_CDF_2017_2S
 		!	PREDICCION DEL CAMPO DE VELOCIDAD NO SOLENOIDAL
 
 			call PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pred)
+			call CC(nx,ny,u_pred,v_pred,u_init)
+			
+			do i=1,ny+2
+				write(3,*) u_pred(i,:)
+			end do
 			
 			return
-						
+									
 		!	RESOLUCION DE LA ECUACION DE POISSON PARA LA PRESION
 
 			contador = 0
@@ -273,7 +269,6 @@ program T2_CDF_2017_2S
 !			CORRECCION DE LA VELOCIDAD
 			
 		call CORRECCION_VELOCIDAD(nx,ny,dx,dy,dt,u_pred,v_pred,phi,u_0,u_1,v_0,v_1)	
-		call CC(nx,ny,u_0,u_1,v_0,v_1,phi,u_init)
 
 		
 	end do

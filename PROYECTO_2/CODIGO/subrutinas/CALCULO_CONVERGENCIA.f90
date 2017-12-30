@@ -19,6 +19,6 @@ subroutine CALCULO_CONVERGENCIA(nx,ny,dx,dy,dt,u,v,phi,CDM)
 		end do
 	end do
 	
-	CDM = sum( abs(CDM_vol) )
+	CDM = MAXVAL( abs(CDM_vol) )
 
 end subroutine

@@ -15,5 +15,6 @@ subroutine WPENS_U(u,v,P,i,j,F_w,F_e,F_n,F_s,u_W,u_P,u_E,u_N,u_S)
 	u_N = u(i+1,j)
 	u_S = u(i-1,j)
 	u_P = u(i,j)
+
 	
 end subroutine
