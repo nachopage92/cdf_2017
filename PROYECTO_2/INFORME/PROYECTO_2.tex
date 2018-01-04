@@ -1,0 +1,144 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{float}		%\begin{figure}[H] <- agrega el H
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{indentfirst}
+\usepackage{caption} %comando \ContinuedFloat
+\usepackage{array} %paquete para tabular
+\usepackage{subcaption} %subfiguras y continuación de figura
+\usepackage{pstricks-add}
+\usepackage{bm}
+\usepackage{enumitem} %cara utilizar distintos enumerate item
+\usepackage{listings} %para poner codigos
+\usepackage{esint} %permite usar integrales cerradas
+
+
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}} % P{} (mayúscula) en vez de p{} (minúscula)
+\newcommand{\vect}[1]{\boldsymbol{#1}} %notación vector \vect{•}
+\renewcommand{\contentsname}{Índice}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabla}
+\renewcommand\refname{Referencias}
+
+%%% quita los ":" del \caption
+\makeatletter
+\long\def\@makecaption#1#2{%
+\vskip\abovecaptionskip
+\sbox\@tempboxa{#1. #2}%
+\ifdim \wd\@tempboxa >\hsize
+#1. #2\par
+\else
+\global \@minipagefalse
+\hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
+\fi
+\vskip\belowcaptionskip}
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\pagestyle{plain}
+
+
+%FORMATO PÁGINA
+%\hoffset
+\voffset=-2cm
+\oddsidemargin=0.8cm
+%\evensidemargin
+%\topmargin 		%entre sup y encab
+%\headheight		%tamaño encabezado
+%\headsep			%sep encab y text
+\textheight=23cm		%altura texto
+\textwidth=15cm		%ancho texto
+%\marginparsep	%sep notmargen y text
+%\marginparwidth	%ancho nota al marg
+\footskip=1cm		%pie de pag
+\setlength\parindent{0pt}	%sin identacion
+
+\begin{document}
+
+\thispagestyle{empty}
+
+\hspace{-5mm}
+\begin{minipage}[c]{7cm}
+\centering
+\includegraphics[width=4cm]{logoutfsm.jpg} \\
+Universidad Técnica Federico Santa María
+\end{minipage}
+\hfill
+\hspace{20mm}
+\begin{minipage}[c]{7cm}
+\centering
+\includegraphics[width=4cm]{logomec1.jpg} \\
+Departamento de Ingenieria Mecánica
+\end{minipage}
+
+\begin{center}
+\vfill
+ \Huge{{\bf Proyecto 2 }} \\ 
+ \Huge{ {\bf Dinámica de fluidos computacional}} \\ \vspace{1cm}
+ \Large{Flujo monofásico newtoniano en una confluencia} \\
+ \Large{Parte 1: Discretización de ecuaciones} 
+\vfill
+\end{center}
+
+\vfill \hfill
+\begin{tabular}{l @{ : } l}
+Nombre &   Ignacio Apablaza \\
+Rol & 201141007-6  \\
+Profesores & Romain Gers \\
+			& Olivier Skurtys \\
+Asignatura & IPM468 \\
+\end{tabular}
+
+\newpage
+%---------------------------------------------
+
+
+\tableofcontents
+
+
+\newpage
+%---------------------------------------------
+
+\input{introduccion.tex}
+\newpage
+%---------------------------------------------
+
+\input{adimensional.tex}
+\newpage
+%---------------------------------------------
+
+\input{convectivo_difusivo.tex}
+\newpage
+%---------------------------------------------
+
+\input{discretizacion_temporal.tex}
+\newpage
+%---------------------------------------------
+
+\input{staggered_grid.tex}
+\newpage
+%---------------------------------------------
+
+\input{plan_de_trabajo.tex}
+\newpage
+%---------------------------------------------
+
+\begin{thebibliography}{3}
+
+\bibitem{patankar} \textsc{Patankar, .S.} , \textit{Numerical Heat Transfer and Fluid Flow, (Series in computational methods in mechanics and thermal sciences)}, Taylor \& Francis, ISBN 0-89116-522-3
+
+\bibitem{versteeg} \textsc{Versteeg, H., Malalasekera, W.,} , \textit{An introduction to Computational Fluid Dynamics}, John Wiley \& Sons Inc., 1995, ISBN 0-582-21884-5
+
+\bibitem{inv} \textsc{Ferziger, J., Peric, M.,} , \textit{Computational Methods for Fluid Dynamics}, Springer, 2002, ISBN 3-540-42074-6
+
+\bibitem{inv} \textsc{Liu, G., R.,} , \textit{Meshfree Methods: Moving Beyond the Finite Element Method}, CRC Press ,2010, ISBN 978-1-4200-8209-8
+
+
+\end{thebibliography}
+
+\end{document}

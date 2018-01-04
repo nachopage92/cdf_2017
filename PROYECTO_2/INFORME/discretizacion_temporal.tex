@@ -1,0 +1,241 @@
+\section{Discretización temporal}
+
+Se plantea un esquema BFD2 (\textit{Backward Differentiation Formula 2nd Order}), tambien llamado esquema de Gear. La derivada en (\ref{ecuacion_patankar}) se aproxima mediante,
+
+\begin{equation}
+\dfrac{\partial \vec{v}}{\partial t} ^ {n+1} = \dfrac{3 \vec{v}^{n+1} -4\vec{v}^n + \vec{v}^{n-1}}{2 \Delta t} + \Theta(\Delta t^2) 
+\end{equation}
+
+El término convectivo en $t_{n+1}$ se obtiene por extrapolación:
+
+\begin{equation}
+H(\vec{v}^{n+1}) = 2 H(\vec{v}^n) - H(\vec{v}^{n-1})
+\end{equation}
+
+La ecuación a resolver mediante el método de volumenes finitos es:
+
+\begin{equation} \label{ecuación_gobernante}
+\dfrac{3 \vec{v}^{n+1} -4\vec{v}^n + \vec{v}^{n-1}}{2 \Delta t} + H(\vec{v}^{n+1}) = -\vec{\nabla} P + G(\vec{v}^{n+1})
+\end{equation}
+
+Los pasos a seguir son los siguientes
+\begin{enumerate}
+\item Predicción del campo de velocidad no solenoidal $\vec{v}^*$
+\item Resolución de la ecuación de Poisson sobre la presión
+\item Corrección del campo de velocidad
+\end{enumerate}
+
+\subsection{Predicción del campo de velocidad no solenoidal $\vec{v}^*$}
+
+\begin{equation}
+\dfrac{3 \vec{v}^{*} -4\vec{v}^n + \vec{v}^{n-1}}{2 \Delta t} + H(\vec{v}^{n+1}) = -\vec{\nabla} P + G(\vec{v}^{*})
+\end{equation}
+
+Sea $\delta V = \vec{v}^* - \vec{v}^n $ y mediante una manipulación algebráica de la ecuación (\ref{ecuación_gobernante}) se obtiene una ecuación equivalente.
+
+\begin{equation} \label{ecuación_gobernante_modificada}
+\left( I - \dfrac{2 \Delta t}{3 \, Re} \Delta \right) \delta V = \dfrac{\vec{v}^n-\vec{v}^{n-1}}{3} - \dfrac{2 \Delta t}{3} \left( H(\vec{v}^{n+1}) + \vec{\nabla} P) \right)
+\end{equation} 
+
+Aplicando el método ADI (\textit{Alternating Direction Implicit}) para descomponer al operador de Helmholtz ($I - \frac{2 \Delta t}{3 \, Re} \Delta $)
+
+\begin{equation}
+\left( I - \dfrac{2 \Delta t}{3 \, Re} \Delta \right) \approx \left( I - \dfrac{2 \Delta t}{3 \, Re} \dfrac{\partial^2}{\partial y^2} \right) \left( I - \dfrac{2 \Delta t}{3 \, Re} \dfrac{\partial^2}{\partial x^2} \right)
+\end{equation}
+
+Luego, resolver (\ref{ecuación_gobernante_modificada}) es equivalente de manera aproximada a resolver
+
+\begin{equation}
+\left( I - \dfrac{2 \Delta t}{3 \, Re} \dfrac{\partial^2}{\partial y^2} \right) \underbrace{ \left( I - \dfrac{2 \Delta t}{3 \, Re} \dfrac{\partial^2}{\partial x^2} \right) \delta V }_{\Delta \delta \overline{V}} = \underbrace{ \dfrac{\vec{v}^n-\vec{v}^{n-1}}{3} - \dfrac{2 \Delta t}{3} \left( H(\vec{v}^{n+1}) + \vec{\nabla} P) \right) }_{RHS^n} 
+\end{equation}
+
+O bien
+
+\begin{align}
+\begin{split}
+\left( I - \dfrac{2 \Delta t}{3 \, Re} \dfrac{\partial^2}{\partial x^2} \right) \delta \overline{V} &= RHS^n \\ 
+\left( I - \dfrac{2 \Delta t}{3 \, Re} \dfrac{\partial^2}{\partial y^2} \right) \delta V &= \overline{V} \\  
+\end{split}
+\end{align}
+
+\subsubsection{1er paso en la dirección $x$ ($\delta \overline{V}$)} 
+
+\begin{equation}
+\left( I - \dfrac{2 \Delta t}{3 \, Re} \dfrac{\partial^2}{\partial x^2} \right) \delta \overline{V} = \dfrac{\vec{v}^n-\vec{v}^{n-1}}{3} - \dfrac{2 \Delta t}{3} \left( H(\vec{v}^{n+1}) + \vec{\nabla} P) \right) = RHS^n
+\end{equation}
+
+Se recurre al método de residuos ponderados,
+
+\begin{equation} \label{primer_paso}
+\iiint_{\Omega} \Psi_i \left[ \left( I - \dfrac{2 \Delta t}{3 \, Re}  \dfrac{\partial^2}{\partial x^2} \right) \delta \overline{V}_i - RHS^n \right] \, dV = 0
+\end{equation}
+
+Aplicando la formulación para volúmenes finitos y desarrrollando el primer término de la izquierda
+
+\begin{equation}
+\iiint_{\Omega_{cv}} \left( I - \dfrac{2 \Delta t}{3 \, Re}  \dfrac{\partial^2}{\partial x^2} \right) \delta \overline{V} \, dV =  \underbrace{\iiint_{\Omega_{cv}} \delta \overline{V} \, dV}_{(**)}  - \underbrace{\dfrac{2 \Delta t}{3 \, Re} \iiint_{\Omega_{cv}}  \dfrac{\partial^2 (\delta \overline{V}) }{\partial x^2} \, dV}_{(***)}
+\end{equation}
+
+Resolviendo $(**)$
+
+\begin{equation}
+\iiint_{\Omega_{cv}} \delta \overline{V} \, dV =  (\delta \overline{V})_P \, \Delta x \Delta y
+\end{equation}
+
+Resolviendo $(***)$
+
+\begin{align*}
+\begin{split}
+\dfrac{2 \Delta t}{3 \, Re} \iiint_{\Omega_{cv}}  \dfrac{\partial^2 (\delta \overline{V}) }{\partial x^2} \, dV &= \dfrac{2 \Delta t}{3 \, Re} \iint_{\partial \Omega_{cv}} \dfrac{\partial (\delta \overline{V})}{\partial x} \cdot \vec{n} \, dA \\
+&= \dfrac{2 \Delta t}{3 \, Re} \left[ -\left(\dfrac{\delta \overline{V}_E - \delta \overline{V}_P}{\Delta x} \right) + \left( \dfrac{\delta \overline{V}_P-\delta \overline{V}_W}{\Delta x} \right) \right] \, \Delta x \Delta y \\
+&= \dfrac{2 \Delta t \Delta y}{3 \, Re} \left[ -\delta \overline{V}_E + 2 \delta \overline{V}_P - \delta \overline{V}_W \right]
+\end{split}
+\end{align*}
+
+Reemplazando $(**)$ y $(***)$ en la (\ref{primer_paso}) se obtiene:
+
+\begin{equation}
+(\delta \overline{V})_P \, \Delta x \Delta y - \dfrac{2 \Delta t \Delta y}{3 \, Re} \left[ -\delta \overline{V}_E + 2 \delta \overline{V}_P - \delta \overline{V}_W \right] = \iiint_{\Omega_{cv}} RHS^n \, dV
+\end{equation}
+
+El término $RHS^n$ se reemplaza por la ecuación la discretización planteada en la Sección \ref{convectivo} y por el campo de presión definido arbitrariamente a \textit{priori}. La ecuación anterior se traduce en resolver un sistemas de ecuaciones tridiagonal dado por,
+
+\begin{equation}
+\begin{split}
+\left( \dfrac{2 \Delta t \Delta y}{3 \, Re} \right) \, \delta \overline{V}_E + \left( \Delta x \Delta y - \dfrac{4 \Delta t \Delta y}{3 \, Re} \right) \delta \overline{V}_P + \left( \dfrac{2 \Delta t \Delta x}{3 \, Re} \right) \, \delta \overline{V}_W \\
+= \iiint_{\Omega_{cv}} RHS^n \, dV
+\end{split}
+\end{equation}
+
+\subsubsection{2do paso en la dirección $y$ ($\delta V$)}
+
+Se procede al igual que en el primer paso: 
+
+\begin{equation} \label{segundo_paso}
+\iiint_{\Omega} \Psi_i \left[ \left( I - \dfrac{2 \Delta t}{3 \, Re}  \dfrac{\partial^2}{\partial y^2} \right) \delta V_i - \delta \overline{V}_i \right] \, dV = 0
+\end{equation}
+
+\begin{equation}
+\iiint_{\Omega_{cv}} \left( I - \dfrac{2 \Delta t}{3 \, Re}  \dfrac{\partial^2}{\partial y^2} \right) \delta V \, dV =  \underbrace{\iiint_{\Omega_{cv}} \delta V \, dV}_{('')}  - \underbrace{\dfrac{2 \Delta t}{3 \, Re} \iiint_{\Omega_{cv}}  \dfrac{\partial^2 (\delta \overline{V}) }{\partial y^2} \, dV}_{(''')}
+\end{equation}
+
+Resolviendo $('')$
+\begin{equation}
+\iiint_{\Omega_{cv}} \delta V \, dV =  (\delta V)_P \, \Delta x \Delta y
+\end{equation}
+
+Resolviendo $(''')$
+\begin{align*}
+\begin{split}
+\dfrac{2 \Delta t}{3 \, Re} \iiint_{\Omega_{cv}}  \dfrac{\partial^2 (\delta V) }{\partial x^2} \, dV &= \dfrac{2 \Delta t}{3 \, Re} \iint_{\partial \Omega_{cv}} \dfrac{\partial (\delta V)}{\partial y} \cdot \vec{n} \, dA \\
+&= \dfrac{2 \Delta t}{3 \, Re} \left[ -\left(\dfrac{\delta V_N - \delta V_P}{\Delta y} \right) + \left( \dfrac{\delta V_P-\delta V_S}{\Delta y} \right) \right] \, \Delta x \Delta y \\
+&= \dfrac{2 \Delta t \Delta x}{3 \, Re} \left[ -\delta V_N + 2 \delta V_P - \delta V_S \right]
+\end{split}
+\end{align*}
+
+Reemplazando $('')$ y $(''')$ en la (\ref{segundo_paso}) se obtiene:
+
+\begin{equation}
+(\delta V)_P \, \Delta x \Delta y - \dfrac{2 \Gamma \Delta t \Delta x}{3 \, Re} \left[ -\delta V_N + 2 \delta V_P - \delta V_S \right] = \iiint_{\Omega_{cv}} (\delta \overline{V} ) \, dV
+\end{equation}
+
+El término del lado derecho de la ecuación se obtuvo del primer paso de tiempo. Luego, se resuelve el sistema tridiagonal dado por,
+
+\begin{equation}
+\begin{split}
+\left( \dfrac{2 \Gamma \Delta t \Delta x}{3 \, Re} \right) \, \delta V_N + \left( \Delta x \Delta y - \dfrac{4 \Gamma \Delta t \Delta x}{3 \, Re} \right) \delta V_P + \left( \dfrac{2 \Gamma \Delta t \Delta x}{3 \, Re} \right) \, \delta V_S \\
+= \iiint_{\Omega_{cv}} (\delta \overline{V} ) \, dV
+\end{split}
+\end{equation}
+
+\paragraph{Observación} los pasos anteriores se realizan tanto para $u$ como para $v$ ya que $\vec{v}=\left\{ u,v \right\}^T$ y $\delta V = \vec{v}^* - \vec{v}^n $. Cada paso de tiempo implica resolver 4 sistemas tridiagonales: 2 sistemas para la componente horizontal y 2 sistemas para la componente vertical de la velocidad. Finalmente se obtiene el predictor de la velocidad:
+
+\begin{equation}
+\vec{v}^* = \Big| \begin{matrix} u^* = u^n + \delta V_x \\ v^* = v^n + \delta V_y
+\end{matrix}
+\end{equation}
+
+\subsection{Resolución de la ecuación de Poisson sobre la presión}
+
+\begin{equation}
+\Delta \phi = \dfrac{3}{2 \Delta t} \nabla \cdot \vec{v}^*
+\end{equation}
+
+\begin{equation}
+\phi = \left( P^{n+1} - P^n \right) + \dfrac{1}{Re} \nabla \cdot \vec{v}^* 
+\end{equation}
+
+Nuevamente se aplica el método de residuos ponderados con formulación para volúmenes finitos.
+
+\begin{equation}
+\iiint_{\Omega} \Psi_i  \left[ \Delta \phi - \dfrac{3}{2 \Delta t} \nabla \cdot v_i^* \right] \, dV = 0
+\end{equation}
+
+Luego,
+
+\begin{equation}
+\iiint_{\Omega_J} \Delta \phi \, dV = \iiint_{\Omega_J} \dfrac{3}{2 \Delta t} \nabla \cdot v_i^* \, dV
+\end{equation}
+
+Recurriendo al teorema de Green-Ostrogradsky se rescribe la ecuación:
+
+\begin{equation}
+\iint_{\partial \Omega_J} \vec{\nabla} \phi \vec{n} \, dA = \dfrac{3}{2 \Delta t} \iint_{\partial \Omega_J} \vec{v}^* \cdot \vec{n} \, dA
+\end{equation}
+
+\paragraph{Discretización} La función auxiliar $\phi$ se discretiza en la malla desplazada asociada a la presión. Luego, los valores de los flujos de $\phi$ se aproximan en los bordes de cada volumen finito $\Omega_J$, mientras que los valores de las velocidad en $\partial \Omega_J$ son conocidos, sin necesidad de aproximarlos.
+
+\begin{equation}
+\begin{split}
+\left[ \dfrac{\partial \phi}{\partial x} \Big|_e - \dfrac{\partial \phi}{\partial x} \Big|_w \right] \Delta y + \left[ \dfrac{\partial \phi}{\partial y} \Big|_n - \dfrac{\partial \phi}{\partial y} \Big|_s \right] \Delta x = \\ \dfrac{3}{2 \Delta t} \left( u^*_e - u_w^*  \right) + \dfrac{3}{2 \Delta t} \left( v^*_n - v_s^*  \right)
+\end{split}
+\end{equation}
+
+Se discretizan las derivadas de $\phi$ implementando un esquemas CDS, obteniendose:
+
+\begin{equation} \label{poisson_discreto}
+\begin{split}
+\left[ \dfrac{\phi_E-2\phi_P+\phi_W}{\Delta x} \right] \Delta y - \left[ \dfrac{\phi_N-2\phi_P+\phi_S}{\Delta y} \right] \Delta x = \\ \dfrac{3}{2 \Delta t} \left( u_e^* - u_w^* + v_n^* - v_s^* \right)
+\end{split}  
+\end{equation}
+
+Agrupando los términos $\phi_{nb}$ resulta un sistema de ecuaciones lineales que en forma matricial se representa por una matriz pentadiagonal. Para resolverlo se utiliza el algoritmo TDMA (\textit{Tri-Diagonal MAtrix Algorithm}). Para ellos se define el término $B$ como,
+
+\begin{equation}
+B =  \dfrac{3}{2 \Delta t} \left( u_e^* - u_w^* + v_n^* - v_s^* \right)
+\end{equation}
+
+Se calcula un predictor (I):
+
+\begin{equation}
+\begin{split}
+\left( \dfrac{\Delta y}{\Delta x} \right) \phi_E^I - \left( 2 \dfrac{\Delta y}{\Delta x} + 2 \dfrac{\Delta x}{\Delta y} \right) \phi_P^I + \left( \dfrac{\Delta y}{\Delta x} \right) \phi_W^I = \\ \left( \dfrac{\Delta x}{\Delta y} \right) \phi_N + \left( \dfrac{\Delta x}{\Delta y} \right) \phi_S + B
+\end{split}
+\end{equation}
+
+Se calcula una corrección (II):
+
+\begin{equation}
+\begin{split}
+\left( \dfrac{\Delta x}{\Delta y} \right) \phi_N^{II} - \left( 2 \dfrac{\Delta y}{\Delta x} + 2 \dfrac{\Delta x}{\Delta y} \right) \phi_P^{II} + \left( \dfrac{\Delta x}{\Delta y} \right) \phi_S^{II} = \\ \left( \dfrac{\Delta y}{\Delta x} \right) \phi_E^I + \left( \dfrac{\Delta y}{\Delta x} \right) \phi_W^I + B
+\end{split}
+\end{equation}
+
+Un criterio de detención que suele utilizarse en establece lo siguiente: En cada punto de la malla se calcula un residuo $R$ como,
+
+\begin{equation}
+R = \sum a_{nb} \phi_{nb} + B - a_P \phi_P 
+\end{equation}
+
+La solución converge en la medida que $R$ tiende a cero. Más detalles del algoritmo se explican en \cite{patankar} y \cite{versteeg}. 
+
+\subsection{Correción del campo de velocidad}
+
+Una vez resuelto la ecuación de Poisson se procede a corregir la velocidad predicha en el primer paso:
+
+\begin{equation}
+\vec{v}^{n+1} = \vec{v} - \Delta t \nabla \phi
+\end{equation}
+
+Se recurre a la misma discretización utilizada en la ecuación (\ref{poisson_discreto}) para el campo auxiliar $\phi$.
+

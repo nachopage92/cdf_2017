@@ -118,7 +118,6 @@ subroutine PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pre
 				
 				RHSx_u(contador) = RHS
 				
-								
 !		fin do direccion x (columna)
 		end do
 
@@ -129,7 +128,7 @@ subroutine PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pre
 		diagux_u = alfa
 		diagux_c = beta
 		diagux_d = alfa
-		diagux_c(nx-1)=beta+alfa
+!		diagux_c(nx-1)=beta+alfa
 	
 !			primer paso predictor u-> resuelve dV_u0
 		call thomas(nx-1,diagux_d,diagux_c,diagux_u,dVx_u,RHSx_u)
@@ -152,18 +151,14 @@ subroutine PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pre
 		diaguy_u = alfa
 		diaguy_c = beta
 		diaguy_d = alfa
-		diaguy_c(1)=beta-alfa
-		diaguy_c(ny)=beta+alfa
+!		diaguy_c(1)=beta-alfa
+!		diaguy_c(ny)=beta+alfa
 	
 !			primer paso predictor u-> resuelve dV_u0
 		call thomas(ny,diaguy_d,diaguy_c,diaguy_u,dVy_u,dV(2:ny,j))
 		u_pred(2:ny+1,j) = dVy_u(:)
 				
 !	fin do direccion y (fila)
-	end do
-
-	do i=1,ny+2
-		write(2,*) dV(i,:)
 	end do
 
 !	PENDIENTE!!!

@@ -26,9 +26,9 @@ subroutine TDMA_PHI(nx,ny,dx,dy,dt,u,v,phi,R)
 	integer :: i,j,k,contador
 	real(kind=8) :: B
 	real(kind=8),dimension(ny+2,nx+2) :: phi_
-	real(kind=8),dimension((nx-2)*(ny-2)) :: R_vec
-	real(kind=8),dimension(nx-2) :: RHS_x,diagx_1,diagx_2,diagx_3,phi_x
-	real(kind=8),dimension(ny-2) :: RHS_y,diagy_1,diagy_2,diagy_3,phi_y
+	real(kind=8),dimension(nx*ny) :: R_vec
+	real(kind=8),dimension(nx) :: RHS_x,diagx_1,diagx_2,diagx_3,phi_x
+	real(kind=8),dimension(ny) :: RHS_y,diagy_1,diagy_2,diagy_3,phi_y
 	
 
 
@@ -36,15 +36,21 @@ subroutine TDMA_PHI(nx,ny,dx,dy,dt,u,v,phi,R)
 
 	phi_ = phi
 
+	!condiciones de contorno para phi	
+	phi_(1,:) = phi_(2,:)
+	phi_(:,1) = phi_(:,2) - (3._8*dx)/(2._8*dt)*u(:,2)
+	phi_(ny+2,:) = phi_(ny+1,:) 
+	phi_(:,nx+2) = phi_(:,nx+1) - (3._8*dx)/(2._8*dt)*u(:,nx+2)
+
 !		PREDICTOR PHI1_E, PHI1_P, PHI1_W (DIRECCION X)
 
 !			recorriendo fila por fila
-	do i=3,ny
+	do i=2,ny+1
 	
 		contador = 0
 		
 !			se crea el vector RHS_x
-		do j=3,nx
+		do j=2,nx+1
 			
 			contador = contador + 1
 			 
@@ -61,14 +67,16 @@ subroutine TDMA_PHI(nx,ny,dx,dy,dt,u,v,phi,R)
 		diagx_1 = -dy/dx
 		diagx_2 = 2._8*( dy/dx + dx/dy )
 		diagx_3 = -dy/dx	
+!		diagx_2(1) = 1._8*dy/dx + 2._8*dx/dy
+!		diagx_2(nx) = 3._8*dy/dx + 2._8*dx/dy
 		
 !			resuelve phi en cada fila
 
-		call thomas(nx-2,diagx_1,diagx_2,diagx_3,phi_x,RHS_x)
+		call thomas(nx,diagx_1,diagx_2,diagx_3,phi_x,RHS_x)
 
 !			se reemplaza la solucion de phi (tmp_x) en su
 !			fila correspondiente a la matriz phi
-		phi_(i,3:nx) = phi_x(:)
+		phi_(i,2:nx+1) = phi_x(:)
 				
 	end do
 
@@ -77,12 +85,12 @@ subroutine TDMA_PHI(nx,ny,dx,dy,dt,u,v,phi,R)
 !		PREDICTOR PHI1_N, PHI1_P, PHI1_S (DIRECCION Y)
 
 !			recorriendo columna por columna
-	do j=3,nx
+	do j=2,nx+1
 	
 		contador = 0
 		
 !			se crea el vector RHS_y
-		do i=3,ny
+		do i=2,ny+1
 			
 			contador = contador + 1
 			 
@@ -98,14 +106,16 @@ subroutine TDMA_PHI(nx,ny,dx,dy,dt,u,v,phi,R)
 		
 		diagy_1 = -dx/dy
 		diagy_2 = 2._8*( dy/dx + dx/dy )
-		diagy_3 = -dx/dy	
+		diagy_3 = -dx/dy
+!		diagy_2(1) = 1._8*dx/dy + 2._8*dy/dx
+!		diagy_2(ny) = 3._8*dx/dy + 2._8*dy/dx	
 		
 !			resuelve phi en cada columna
-		call thomas(ny-2,diagy_1,diagy_2,diagy_3,phi_y,RHS_y)
+		call thomas(ny,diagy_1,diagy_2,diagy_3,phi_y,RHS_y)
 		
 !			se reemplaza la solucion de phi (tmp_x) en su
 !			fila correspondiente a la matriz phi
-		phi_(3:ny,j) = phi_y(:)
+		phi_(2:ny+1,j) = phi_y(:)
 		
 	end do
 	

@@ -42,10 +42,10 @@ program T2_CDF_2017_2S
 				& phi
 		end subroutine
 		
-		subroutine CORRECCION_PRESION(nx,ny,dx,dy,P,phi,u,v)
+		subroutine CORRECCION_PRESION(nx,ny,dx,dy,Re,P,phi,u,v)
 			implicit none
 			integer,intent(in) :: nx,ny
-			real(kind=8),intent(in) :: dx,dy
+			real(kind=8),intent(in) :: dx,dy,Re
 			real(kind=8),dimension((nx+2),(ny+2)),intent(in) :: phi,u,v
 			real(kind=8),dimension((nx+2),(ny+2)),intent(inout) :: P
 		end subroutine
@@ -79,6 +79,8 @@ program T2_CDF_2017_2S
 		& u_0(:,:),v_0(:,:),u_1(:,:),v_1(:,:),P(:,:),&
 		& RHS_u(:),RHS_v(:),phi(:,:),&
 		& u_pred(:,:),v_pred(:,:)
+		
+	character(len=3) :: dummy = 'cfd' 
 	
 	
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -141,8 +143,6 @@ program T2_CDF_2017_2S
 	dx = Lx/dfloat(nx)
 	dy = Ly/dfloat(ny)	
 
-
-
 !	VELOCIDAD ENTRADA
 	u_init = Re*gama/(rho*Ly)
 
@@ -168,19 +168,21 @@ program T2_CDF_2017_2S
 
 
 !	VELOCIDAD INICIAL
+
 !		en t_(n)
 	allocate(u_0(ny+2,nx+2),v_0(ny+2,nx+2))
-	do i=1,ny+2	
-		u_0(i,:) = (/ (0.1_8*u_init*(nx+2-j)*(i-1)/((ny+2)*(nx+2)),j=1,nx+2) /)
-	end do
-!	u_0 = 0._8
+!	do i=1,ny+2	
+!		u_0(i,:) = (/ (0.1_8*u_init*(nx+2-j)*(i-1)/((ny+2)*(nx+2)),j=1,nx+2) /)
+!	end do
+	u_0 = 0.1_8
 	v_0 = 0._8
+	
 !		en t_(n+1)
 	allocate(u_1(ny+2,nx+2),v_1(ny+2,nx+2))
-	do i=1,ny+2	
-		u_1(i,:) = (/ (0.1_8*u_init*(nx+2-j)*(i-1)/((ny+2)*(nx+2)),j=1,nx+2) /)
-	end do
-!	u_1 = 0._8
+!	do i=1,ny+2	
+!		u_1(i,:) = (/ (0.1_8*u_init*(nx+2-j)*(i-1)/((ny+2)*(nx+2)),j=1,nx+2) /)
+!	end do
+	u_1 = 0.1_8
 	v_1 = 0._8
 	
 !	CAMPO DE PRESION INICIAL
@@ -216,6 +218,7 @@ program T2_CDF_2017_2S
 
 		do while( info_ITER .eq. 0 )
 		
+			phi = 0._8
 			niter = niter + 1 
 		
 		!	PREDICCION DEL CAMPO DE VELOCIDAD NO SOLENOIDAL
@@ -223,11 +226,12 @@ program T2_CDF_2017_2S
 			call PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pred)
 			call CC(nx,ny,u_pred,v_pred,u_init)
 			
+			open(unit=10,file=dummy//'v.dat',access='SEQUENTIAL')
 			do i=1,ny+2
-				write(3,*) u_pred(i,:)
-			end do
+				write(10,*) u_pred(i,:)
+			end do	
+			close(10)
 			
-			return
 									
 		!	RESOLUCION DE LA ECUACION DE POISSON PARA LA PRESION
 
@@ -244,7 +248,23 @@ program T2_CDF_2017_2S
 
 		!	CORRECCION DEL CAMPO DE VELOCIDAD Y PRESION
 
-			call CORRECCION_PRESION(nx,ny,dx,dy,P,phi,u_pred,v_pred)
+			call CORRECCION_PRESION(nx,ny,dx,dy,Re,P,phi,u_pred,v_pred)
+
+			open(unit=10,file=dummy//'phi.dat',access='SEQUENTIAL')
+			do i=1,ny+2
+				write(10,*) phi(i,:)
+			end do	
+			close(10)
+			
+			open(unit=10,file=dummy//'p.dat',access='SEQUENTIAL')
+			do i=1,ny+2
+				write(10,*) P(i,:)
+			end do	
+			close(10)
+		
+			print*,CDM
+		
+			read(*,*)	
 								
 		!	VERIFICAR CONVERGENCIA DE LAS VARIABLES
 
@@ -255,11 +275,10 @@ program T2_CDF_2017_2S
 				info_ITER = 1
 			end if
 
-			print*, CDM	
+!			print*, CDM	
 
 		end do
-
-
+		
 		return
 			
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::
