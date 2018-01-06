@@ -104,7 +104,7 @@ program T2_CDF_2017_2S
 !	nt = T/dt
 	
 !	NUMERO DE REYNOLDS
-	Re = 2000._8
+	Re = 1000._8
 !	DENSIDAD
 	rho = 1d3
 !	VISCOSIDAD

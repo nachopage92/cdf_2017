@@ -9,7 +9,7 @@ subroutine  CALCULO_RHS(&
 	&phi0_W,phi0_P,phi0_E,phi0_N,phi0_S,&
 	&F_w,F_e,F_n,F_s,u_W,u_P,u_E,u_N,u_S,&
 	&F0_w,F0_e,F0_n,F0_s,&
-	&P_U,P_D,dx,dy,dist1,dist2,dt,Re,RHS)
+	&P_U,P_D,dx,dy,dist,dt,Re,RHS)
 
 !:::::::::::::::::::::::::::::::::::::::::::::
 
@@ -20,7 +20,7 @@ subroutine  CALCULO_RHS(&
 	&phi0_W,phi0_P,phi0_E,phi0_N,phi0_S,&
 	&F_w,F_e,F_n,F_s,u_W,u_P,u_E,u_N,u_S,&
 	&F0_w,F0_e,F0_n,F0_s,&
-	&P_U,P_D,dx,dy,dist1,dist2,dt,Re
+	&P_U,P_D,dx,dy,dist,dt,Re
 
 
 	real(kind=8),intent(out) :: RHS
@@ -36,20 +36,22 @@ subroutine  CALCULO_RHS(&
 !:::::::::::::::::::::::::::::::::::::::::::::
 						
 !			COEFICIENTES DE LA CONVECCION	
+
 		h_W = -0.5_8*dy*F_w
 		h_E =  0.5_8*dy*F_e
 		h_S = -0.5_8*dx*F_s
 		h_N =  0.5_8*dx*F_n
-		h_P = - h_W - h_E - h_S - h_N
+		h_P = + h_W + h_E + h_S + h_N !	REVISAR ESTO
 		
 		h0_W = -0.5_8*dy*F0_w
 		h0_E =  0.5_8*dy*F0_e
 		h0_S = -0.5_8*dx*F0_s
 		h0_N =  0.5_8*dx*F0_n
-		h0_P = - h0_W - h0_E - h0_S - h0_N 
+		h0_P = + h0_W + h0_E + h0_S + h0_N  !	REVISAR ESTO
 		
 		
 !			CALCULO DE LA DIFUSION
+
 		g_w = (-1._8/Re) * (dy/dx)
 		g_e = (-1._8/Re) * (dy/dx)
 		g_n = (-1._8/Re) * (dx/dy)
@@ -60,19 +62,25 @@ subroutine  CALCULO_RHS(&
 !:::::::::::::::::::::::::::::::::::::::::::::
 
 !			DISCRETIZACION DE LA CONVECCION
+
 		H = h_W*phi_W + h_E*phi_E + &
 			& h_S*phi_S + h_N*phi_N + h_P*phi_P
+			
 		H0 = h0_W*phi0_W + h0_E*phi0_E + &
 			&h0_S*phi0_S + h0_N*phi0_N + h0_P*phi0_P
 
 !			DISCRETIZACION DE LA DIFUSION
+
 		G = g_W*phi_W + g_E*phi_E + &
 			&g_S*phi_S + g_N*phi_N + g_P*phi_P
 
 !			DISCRETIZACION DEL GRADIENTE DE PRESION
-		dP = (P_U-P_D)*dist1
-		
+
+		dP = (P_U-P_D)*dist
+
+
 !			RIGHT HAND SIDE
+
 		RHS = ( phi_P - phi0_P )*dy*dx/3._8 &
 			& - 2._8*dt/3._8 * ( 2._8*H - H0 + dP - G )
 

@@ -25,14 +25,14 @@ subroutine PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pre
 			&phi0_W,phi0_P,phi0_E,phi0_N,phi0_S,&
 			&F_w,F_e,F_n,F_s,u_W,u_P,u_E,u_N,u_S,&
 			&F0_w,F0_e,F0_n,F0_s,&
-			&P_U,P_D,dx,dy,dist1,dist2,dt,Re,RHS)
+			&P_U,P_D,dx,dy,dist,dt,Re,RHS)
 			implicit none
 			real(kind=8),intent(in):: &
 			&phi_W,phi_P,phi_E,phi_N,phi_S,&
 			&phi0_W,phi0_P,phi0_E,phi0_N,phi0_S,&
 			&F_w,F_e,F_n,F_s,u_W,u_P,u_E,u_N,u_S,&
 			&F0_w,F0_e,F0_n,F0_s,&
-			&P_U,P_D,dx,dy,dist1,dist2,dt,Re
+			&P_U,P_D,dx,dy,dist,dt,Re
 			real(kind=8),intent(out) :: RHS
 		end subroutine
 				
@@ -114,7 +114,7 @@ subroutine PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pre
 				&u0_W,u0_P,u0_E,u0_N,u0_S,&
 				&F_w,F_e,F_n,F_s,u_W,u_P,u_E,u_N,u_S,&
 				&F0_w,F0_e,F0_n,F0_s,&
-				&P_e,P_w,dx,dy,dy,dx,dt,Re,RHS)
+				&P_e,P_w,dx,dy,dy,dt,Re,RHS)
 				
 				RHSx_u(contador) = RHS
 				
@@ -124,7 +124,7 @@ subroutine PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pre
 !			CALCULO DE dV_u EN CADA FILA	
 !		diagonales de la matriz tridiagonal	
 		alfa = -2._8*dt*dy/(3._8*dx*Re)
-		beta =  1._8*dx*dy + 2._8*dt*dy/(3._8*dx*Re)
+		beta =  1._8*dx*dy + 4._8*dt*dy/(3._8*dx*Re)
 		diagux_u = alfa
 		diagux_c = beta
 		diagux_d = alfa
@@ -147,7 +147,7 @@ subroutine PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pre
 !			CALCULO DE dV_u EN CADA FILA	
 !		diagonales de la matriz tridiagonal	
 		alfa = -2._8*dt*dx/(3._8*dy*Re)
-		beta =  1._8*dx*dy + 2._8*dt*dx/(3._8*dy*Re)
+		beta =  1._8*dx*dy + 4._8*dt*dx/(3._8*dy*Re)
 		diaguy_u = alfa
 		diaguy_c = beta
 		diaguy_d = alfa
