@@ -174,7 +174,7 @@ program T2_CDF_2017_2S
 !	do i=1,ny+2	
 !		u_0(i,:) = (/ (0.1_8*u_init*(nx+2-j)*(i-1)/((ny+2)*(nx+2)),j=1,nx+2) /)
 !	end do
-	u_0 = 0.1_8
+	u_0 = 0._8
 	v_0 = 0._8
 	
 !		en t_(n+1)
@@ -182,19 +182,24 @@ program T2_CDF_2017_2S
 !	do i=1,ny+2	
 !		u_1(i,:) = (/ (0.1_8*u_init*(nx+2-j)*(i-1)/((ny+2)*(nx+2)),j=1,nx+2) /)
 !	end do
-	u_1 = 0.1_8
+	u_1 = 0._8
 	v_1 = 0._8
 	
 !	CAMPO DE PRESION INICIAL
 !		en t_(n)
 	allocate(P(ny+2,nx+2))
 	P = 0._8
+	do i=2,ny+1
+		P(i,2:nx+1) = (/ ( 0.5_8 - 0.5_8*(i-1)/nx , i=1,nx ) /)	
+	end do
+
 
 !	FUNCION AUXILIAR PHI
 	allocate(phi(ny+2,nx+2))
 	phi = 0.0_8
 		
 !	IMPOSICION DE LAS CONDICIONES DE CONTORNO
+	i = 0 !t_(n-1)
 	call CC(nx,ny,u_0,v_0,u_init)
 	call CC(nx,ny,u_1,v_1,u_init)
 
@@ -210,7 +215,7 @@ program T2_CDF_2017_2S
 
 	info_ITER = 0
 
-	do k = 1,5
+	do k = 1,5 			!5 PASOS DE TIEMPO
 
 		niter = 0
 
@@ -218,8 +223,11 @@ program T2_CDF_2017_2S
 
 		do while( info_ITER .eq. 0 )
 		
+			u_pred = 0._8
+			v_pred = 0._8
 			phi = 0._8
 			niter = niter + 1 
+		
 		
 		!	PREDICCION DEL CAMPO DE VELOCIDAD NO SOLENOIDAL
 
@@ -232,29 +240,35 @@ program T2_CDF_2017_2S
 			end do	
 			close(10)
 			
-									
+												
 		!	RESOLUCION DE LA ECUACION DE POISSON PARA LA PRESION
 
-			contador = 0
-			info_TDMA = 0
-			do while ( info_TDMA .eq. 0 ) 
-				contador = contador + 1		
-				call TDMA_PHI(nx,ny,dx,dy,dt,u_pred,v_pred,phi,R)
-				if ( R .lt. criterio1_TDMA .or. contador .gt. criterio2_TDMA ) then
-					info_TDMA = 1
-				end if	
-			end do
-			info_TDMA = 0
+!			contador = 0
+!			info_TDMA = 0
+!			do while ( info_TDMA .eq. 0 ) 
+!				contador = contador + 1		
+!				call TDMA_PHI(nx,ny,dx,dy,dt,u_pred,v_pred,phi,R)
+!				if ( R .lt. criterio1_TDMA .or. contador .gt. criterio2_TDMA ) then
+!					info_TDMA = 1
+!				end if	
+!				
+!				print*, contador, R
+!				
+!			end do
+!			info_TDMA = 0
 
-		!	CORRECCION DEL CAMPO DE VELOCIDAD Y PRESION
-
-			call CORRECCION_PRESION(nx,ny,dx,dy,Re,P,phi,u_pred,v_pred)
+			call PHI_DIRECTO(nx,ny,dx,dy,dt,u_pred,v_pred,phi,R)
 
 			open(unit=10,file=dummy//'phi.dat',access='SEQUENTIAL')
 			do i=1,ny+2
 				write(10,*) phi(i,:)
 			end do	
 			close(10)
+
+		!	CORRECCION DEL CAMPO DE PRESION
+
+			call CORRECCION_PRESION(nx,ny,dx,dy,Re,P,phi,u_pred,v_pred)
+
 			
 			open(unit=10,file=dummy//'p.dat',access='SEQUENTIAL')
 			do i=1,ny+2
@@ -279,6 +293,7 @@ program T2_CDF_2017_2S
 
 		end do
 		
+		print*, 'ATENTO!!! SE CORRIGE LA VELOCIDAD!!'
 		return
 			
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::

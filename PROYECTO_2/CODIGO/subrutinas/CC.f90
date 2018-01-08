@@ -27,9 +27,9 @@ subroutine CC(nx,ny,u,v,u_init)
 !			dv/dx(x=L) = 0
 	v(:,nx+2) = v(:,nx+1)
 
-!		cara superior ( simetria )
+!		cara superior ( u,v = 0 )
 !			du/dy = 0
-	u(ny+2,:) = u(ny+1,:)
+	u(ny+2,:) = -u(ny+1,:)
 !			v(x,y=h/2) = 0	
 	v(ny+1,:) = 0._8
 !			(no entrega informacion)

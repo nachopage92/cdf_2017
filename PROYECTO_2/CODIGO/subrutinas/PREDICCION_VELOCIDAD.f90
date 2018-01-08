@@ -81,9 +81,6 @@ subroutine PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pre
 		
 	real(kind=8),dimension(ny+2,nx+2) :: dV
 	
-	real(kind=8) :: verif1((nx-1)*ny,(nx-1)*ny) , provi1((nx-1)*ny) ,&
-					& verif2((nx-1)*(ny-1),(nx-1)*(ny-1)) , provi2((nx-1)*(ny-1))
-		
 !::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !!::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !!::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -93,6 +90,8 @@ subroutine PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pre
 !	-----------------------------------------------
 
 !			CALCULO EN LA DIRECCION X
+
+ dV = 0._8
 
 !	en cada fila...
 	do i=2,ny+1
@@ -133,6 +132,7 @@ subroutine PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pre
 !			primer paso predictor u-> resuelve dV_u0
 		call thomas(nx-1,diagux_d,diagux_c,diagux_u,dVx_u,RHSx_u)
 		dV(i,3:nx+1) = dVx_u(:)
+		write(3,*) dVx_u(:)
 		
 !	fin do direccion y (fila)
 	end do
@@ -140,6 +140,9 @@ subroutine PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pre
 	do i=1,ny+2
 		write(1,*) dV(i,:)
 	end do
+
+	
+!			CALCULO EN LA DIRECCION Y
 
 !	en cada columna...
 	do j=3,nx+1
