@@ -1,106 +1,94 @@
-!:::::::::::::::::::::::::::::::::::::::::::::
 
-! CALCULO DE RHS PARA CALCULO DE PHI
+subroutine  CALCULO_RHS(u,v,u0,v0,P,i,j,dx,dy,dt,str,RHS)
 
-!:::::::::::::::::::::::::::::::::::::::::::::
-
-subroutine  CALCULO_RHS(&
-	&phi_W,phi_P,phi_E,phi_N,phi_S,&
-	&phi0_W,phi0_P,phi0_E,phi0_N,phi0_S,&
-	&F_w,F_e,F_n,F_s,u_W,u_P,u_E,u_N,u_S,&
-	&F0_w,F0_e,F0_n,F0_s,&
-	&P_U,P_D,dx,dy,dist,dt,Re,RHS)
-
-!:::::::::::::::::::::::::::::::::::::::::::::
+!!:::::::::::::::::::::::::::::::::::::::::::::
 
 	implicit none
-
-	real(kind=8),intent(in):: &
-	&phi_W,phi_P,phi_E,phi_N,phi_S,&
-	&phi0_W,phi0_P,phi0_E,phi0_N,phi0_S,&
-	&F_w,F_e,F_n,F_s,u_W,u_P,u_E,u_N,u_S,&
-	&F0_w,F0_e,F0_n,F0_s,&
-	&P_U,P_D,dx,dy,dist,dt,Re
-
-
-	real(kind=8),intent(out) :: RHS
-
-	!VARIABLES LOCALES
-	real(kind=8) :: & 		
-		& Pe_w,Pe_e,Pe_n,Pe_s, &
-		& h_W,h_E,h_S,h_N,h_P, &
-		& h0_W,h0_E,h0_S,h0_N,h0_P, &
-		& g_W,g_E,g_S,g_N,g_P, &
-		& H,H0,G,dP
+	!entrada
+	integer,intent(in) :: i,j
+	real(kind=8)::dx,dy,dt
+	real(kind=8),dimension(:,:),intent(in) ::&
+		& u,v,u0,v0,P
+	character(len=1),intent(in) :: str
+	!salida
+	real(kind=8),intent(out)::RHS
+	
+	!locales
+	real(kind=8)	::	H,H0,G,dP, &
+	&	F_w,F_e,F_n,F_s, &
+	&	F0_w,F0_e,F0_n,F0_s, &
+	&	phi_W,phi_P,phi_E,phi_N,phi_S, &
+	&	phi0_W,phi0_P,phi0_E,phi0_N,phi0_S 
 	
 !:::::::::::::::::::::::::::::::::::::::::::::
-						
-!			COEFICIENTES DE LA CONVECCION	
+				
+	call WPENS(str,u,v,i,j,F_w,F_e,F_n,F_s,&
+		&phi_W,phi_P,phi_E,phi_N,phi_S)
+	call WPENS(str,u0,v0,i,j,F0_w,F0_e,F0_n,F0_s,&
+		&phi0_W,phi0_P,phi0_E,phi0_N,phi0_S)
 
-		h_W = -0.5_8*dy*F_w
-		h_E =  0.5_8*dy*F_e
-		h_S = -0.5_8*dx*F_s
-		h_N =  0.5_8*dx*F_n
-		h_P = + h_W + h_E + h_S + h_N !	REVISAR ESTO
-		
-		h0_W = -0.5_8*dy*F0_w
-		h0_E =  0.5_8*dy*F0_e
-		h0_S = -0.5_8*dx*F0_s
-		h0_N =  0.5_8*dx*F0_n
-		h0_P = + h0_W + h0_E + h0_S + h0_N  !	REVISAR ESTO
-		
-		
-!			CALCULO DE LA DIFUSION
-
-		g_w = (-1._8/Re) * (dy/dx)
-		g_e = (-1._8/Re) * (dy/dx)
-		g_n = (-1._8/Re) * (dx/dy)
-		g_s = (-1._8/Re) * (dx/dy)
-		g_p = -( g_w + g_e + g_n + g_s )
-	
+	if ( str .eq. 'u' ) then
+		dP = (P(i,j)-P(i,j-1))*dy
+	else if ( str .eq. 'v' ) then
+		dP = (P(i+1,j)-P(i,j))*dy
+	else
+		print*, 'ERROR'
+		RETURN
+	end if
 				
 !:::::::::::::::::::::::::::::::::::::::::::::
 
 !			DISCRETIZACION DE LA CONVECCION
 
-		H = h_W*phi_W + h_E*phi_E + &
-			& h_S*phi_S + h_N*phi_N + h_P*phi_P
-			
-		H0 = h0_W*phi0_W + h0_E*phi0_E + &
-			&h0_S*phi0_S + h0_N*phi0_N + h0_P*phi0_P
-
-!			DISCRETIZACION DE LA DIFUSION
-
-		G = g_W*phi_W + g_E*phi_E + &
-			&g_S*phi_S + g_N*phi_N + g_P*phi_P
-
-!			DISCRETIZACION DEL GRADIENTE DE PRESION
-
-		dP = (P_U-P_D)*dist
-
+	H = ((phi_E+phi_P)*F_e-(phi_P+phi_W)*F_w)*(dy/2._8) + &
+	&	((phi_N+phi_P)*F_n-(phi_P+phi_S)*F_s)*(dx/2._8) 
+		
+	H0 = ((phi0_E+phi0_P)*F0_e-(phi0_P+phi0_W)*F0_w)*(dy/2._8) + &
+	&	 ((phi0_N+phi0_P)*F0_n-(phi0_P+phi0_S)*F0_s)*(dx/2._8) 	
+		
+	G = (phi_E-2._8*phi_P+phi_W)*(dy/dx)+(phi_N-2._8*phi_P+phi_S)*(dx/dy)
 
 !			RIGHT HAND SIDE
 
-		RHS = ( phi_P - phi0_P )*dy*dx/3._8 &
-			& - 2._8*dt/3._8 * ( 2._8*H - H0 + dP - G )
-
-
-!print*, phi0_w , phi0_p , phi0_e , phi0_n , phi0_s
-!print*, phi_w , phi_p , phi_e , phi_n , phi_s
-!print*, h0_w , h0_p , h0_e , h0_n , h0_s
-!print*, h_w , h_p , h_e , h_n , h_s
-!print*, g_w , g_p , g_e , g_n , g_s
-!print*, dP
-!print*, RHS
-!print*, 
-
-!!			CALCULO DEL NUMERO DE PECLET
-!		Pe_w = abs(F_w)*Re*dx
-!		Pe_e = abs(F_e)*Re*dx
-!		Pe_n = abs(F_n)*Re*dy
-!		Pe_s = abs(F_s)*Re*dy
+	RHS = ( phi_P - phi0_P )*(dy*dx)/3._8 &
+		& - (2._8*dt/3._8) * ( 2._8*H - H0 + dP - G )
 		
+!:::::::::::::::::::::::::::::::::::::::::::::	
+
+	contains
+	
+	subroutine WPENS(str,u,v,i,j,F_w,F_e,F_n,F_s,&
+	 &phi_W,phi_P,phi_E,phi_N,phi_S)
+		implicit none
+		character(len=1)::str
+		integer,intent(in)::i,j
+		real(kind=8),intent(in),dimension(:,:) :: u,v
+		real(kind=8),intent(out):: &
+			&F_w,F_e,F_n,F_s,phi_W,phi_E,phi_N,phi_S,phi_P
+		if ( str .eq. 'u' ) then
+			F_w = 0.5_8 * ( u(i,j) + u(i,j+1) )
+			F_e = 0.5_8 * ( u(i,j-1) + u(i,j) )
+			F_n = 0.5_8 * ( v(i,j) + v(i,j-1) ) 
+			F_s = 0.5_8 * ( v(i-1,j) + v(i-1,j-1) )
+			phi_W = u(i,j-1)
+			phi_E = u(i,j+1)
+			phi_N = u(i+1,j)
+			phi_S = u(i-1,j)
+			phi_P = u(i,j) 
+		else if ( str .eq. 'v' ) then
+			F_w = 0.5_8 * ( u(i,j+1) + u(i+1,j+1) )
+			F_e = 0.5_8 * ( u(i,j) + u(i+1,j) )
+			F_n = 0.5_8 * ( v(i+1,j) + v(i,j) ) 
+			F_s = 0.5_8 * ( v(i,j) + v(i-1,j) )
+			phi_W = v(i,j-1)
+			phi_E = v(i,j+1)
+			phi_N = v(i+1,j)
+			phi_S = v(i-1,j)
+			phi_P = v(i,j)
+		end if
+	end subroutine
 		
-!:::::::::::::::::::::::::::::::::::::::::::::		
+!:::::::::::::::::::::::::::::::::::::::::::::	
 
 end subroutine
+

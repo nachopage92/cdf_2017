@@ -89,19 +89,14 @@ program T2_CDF_2017_2S
 !	PARAMETROS
 
 !	DIMENSION TUBERIA
-	Lx = 2._8
+	Lx = 10._8
 	Ly = 1._8
 	
 !	NUMERO DE VOLUMENES
 !		(no considera nodos ficticios))
-	nx = 20
+	nx = 100
 	ny = 10
 	num_volumenes = ny*nx
-	
-!!	PASO DE TIEMPO
-!	dt = 0.1_8
-!	T = 10._8
-!	nt = T/dt
 	
 !	NUMERO DE REYNOLDS
 	Re = 1000._8
@@ -151,7 +146,7 @@ program T2_CDF_2017_2S
 	dt = CFL * dx / u_init
 	T = 10._8
 	nt = T/dt
-
+	
 
 !	MALLA PRINCIPAL ( x_1 , y_1 )
 	allocate(x_1(ny+2),y_1(nx+2))
@@ -171,17 +166,11 @@ program T2_CDF_2017_2S
 
 !		en t_(n)
 	allocate(u_0(ny+2,nx+2),v_0(ny+2,nx+2))
-!	do i=1,ny+2	
-!		u_0(i,:) = (/ (0.1_8*u_init*(nx+2-j)*(i-1)/((ny+2)*(nx+2)),j=1,nx+2) /)
-!	end do
 	u_0 = 0._8
 	v_0 = 0._8
 	
 !		en t_(n+1)
 	allocate(u_1(ny+2,nx+2),v_1(ny+2,nx+2))
-!	do i=1,ny+2	
-!		u_1(i,:) = (/ (0.1_8*u_init*(nx+2-j)*(i-1)/((ny+2)*(nx+2)),j=1,nx+2) /)
-!	end do
 	u_1 = 0._8
 	v_1 = 0._8
 	
@@ -189,28 +178,20 @@ program T2_CDF_2017_2S
 !		en t_(n)
 	allocate(P(ny+2,nx+2))
 	P = 0._8
-	do i=2,ny+1
-		P(i,2:nx+1) = (/ ( 0.5_8 - 0.5_8*(i-1)/nx , i=1,nx ) /)	
-	end do
-
 
 !	FUNCION AUXILIAR PHI
 	allocate(phi(ny+2,nx+2))
-	phi = 0.0_8
-		
+
 !	IMPOSICION DE LAS CONDICIONES DE CONTORNO
-	i = 0 !t_(n-1)
 	call CC(nx,ny,u_0,v_0,u_init)
 	call CC(nx,ny,u_1,v_1,u_init)
-
+	
 
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 !			INICIO INTEGRACION TEMPORAL
 
 	allocate(u_pred(ny+2,nx+2),v_pred(ny+2,nx+2))
-	u_pred = 0._8
-	v_pred = 0._8
 
 
 	info_ITER = 0
@@ -239,6 +220,8 @@ program T2_CDF_2017_2S
 				write(10,*) u_pred(i,:)
 			end do	
 			close(10)
+			
+			return
 			
 												
 		!	RESOLUCION DE LA ECUACION DE POISSON PARA LA PRESION
