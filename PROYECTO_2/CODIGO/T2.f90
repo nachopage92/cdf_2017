@@ -30,23 +30,15 @@ program T2_CDF_2017_2S
 			real(kind=8),dimension(ny+2,nx+2),intent(in):: &
 				& u_pred , v_pred
 		end subroutine
-				
-		subroutine TDMA_PHI(nx,ny,dx,dy,dt,u,v,phi,R)
-			integer,intent(in) :: nx,ny
-			real(kind=8),intent(in) :: dx,dy,dt
-			real(kind=8),dimension(ny+2,nx+2),intent(in) :: &
-				& u,v
-			real(kind=8),intent(out) :: R
-			real(kind=8),dimension(ny+2,nx+2),intent(inout) :: & 
-				& phi
-		end subroutine
 		
-		subroutine CORRECCION_PRESION(nx,ny,dx,dy,Re,P,phi,u,v)
+		subroutine CORRECCION_PRESION(nx,ny,dx,dy,dt,Re,P,u,v,R,phi)
 			implicit none
 			integer,intent(in) :: nx,ny
-			real(kind=8),intent(in) :: dx,dy,Re
-			real(kind=8),dimension((nx+2),(ny+2)),intent(in) :: phi,u,v
-			real(kind=8),dimension((nx+2),(ny+2)),intent(inout) :: P
+			real(kind=8),intent(in) :: dx,dy,dt,Re
+			real(kind=8),dimension((ny+2),(nx+2)),intent(in) :: u,v
+			real(kind=8),dimension((ny+2),(nx+2)),intent(inout) :: P
+			real(kind=8),intent(out) :: R
+			real(kind=8),dimension((ny+2),(nx+2)),intent(out) :: phi
 		end subroutine
 
 		subroutine CORRECCION_VELOCIDAD(nx,ny,dx,dy,dt,u_pred,v_pred,phi,u_0,u_1,v_0,v_1)
@@ -58,13 +50,6 @@ program T2_CDF_2017_2S
 			real(kind=8),dimension((nx+2),(ny+2)),intent(inout) :: u_0,u_1,v_0,v_1
 		end subroutine
 		
-		subroutine CALCULO_CONVERGENCIA(nx,ny,dx,dy,dt,u,v,phi,CDM)
-			implicit none
-			integer,intent(in) :: nx,ny
-			real(kind=8),intent(in) :: dx,dy,dt
-			real(kind=8),dimension((nx+2),(ny+2)),intent(in) :: u,v,phi
-			real(kind=8),intent(out):: CDM
-		end subroutine
 
 	END INTERFACE
 	
@@ -104,13 +89,10 @@ program T2_CDF_2017_2S
 !	VISCOSIDAD
 	gama = 1.5_8
 		
-!	CRITERIO RUTINA TDMA_PHI
-	criterio1_TDMA = 1d-3	! criterio1 -> max(RESTO)
-	criterio2_TDMA = 100	! criterio2 -> iteraciones
-	
+
 !	CRITERIO CONVERGENCIA
-	criterio1_convergencia = 1d-3 ! crit_conver -> max(eq_cdm_vol)
-	criterio2_convergencia = 20
+	criterio1_convergencia = 1d-6 ! crit_conver -> max(eq_cdm_vol)
+	criterio2_convergencia = 10000
 	
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 	
@@ -143,7 +125,7 @@ program T2_CDF_2017_2S
 !	PASO DE TIEMPO
 	CFL = 1._8
 	dt = CFL * dx / u_init
-	dt = dt*0.05
+	dt = dt *0.5
 	T = 10._8
 	nt = T/dt
 	
@@ -202,19 +184,17 @@ program T2_CDF_2017_2S
 	allocate(u_pred(ny+2,nx+2),v_pred(ny+2,nx+2))
 
 
-	info_ITER = 0
+!	info_ITER = 0
 
-	do k = 1,5 			!5 PASOS DE TIEMPO
-
-		niter = 0
+	do k = 1,10		!5 PASOS DE TIEMPO
 
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-		do while( info_ITER .eq. 0 )
+	
+		niter = 0
 		
+		do
 			u_pred = 0._8
 			v_pred = 0._8
-			phi = 0._8
 			niter = niter + 1 
 		
 		
@@ -223,79 +203,44 @@ program T2_CDF_2017_2S
 			call PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pred)
 			call CC(nx,ny,u_pred,v_pred)
 			
-			open(unit=10,file=dummy//'v.dat',access='SEQUENTIAL')
-			do i=1,ny+2
-				write(10,*) u_pred(i,:)
-			end do	
-			close(10)
-					
 												
-!			RESOLUCION DE LA ECUACION DE POISSON PARA LA PRESION
+!			CORRECCION DE LA PRESION
 
-			contador = 0
-			info_TDMA = 0
-			do while ( info_TDMA .eq. 0 ) 
-				contador = contador + 1		
-				call PHI_DIRECTO(nx,ny,dx,dy,dt,u_1,v_1,phi,R)
-				if ( R .lt. criterio1_TDMA .or. contador .gt. criterio2_TDMA ) then
-					info_TDMA = 1
-				end if	
-				
-				print*, contador, R
-				
-			end do
-			info_TDMA = 0
-			
-			return
+			call CORRECCION_PRESION(nx,ny,dx,dy,dt,Re,P,u_pred,v_pred,R,phi)
 
-!			call PHI_DIRECTO(nx,ny,dx,dy,dt,u_pred,v_pred,phi,R)
-
-!			open(unit=10,file=dummy//'phi.dat',access='SEQUENTIAL')
-!			do i=1,ny+2
-!				write(10,*) phi(i,:)
-!			end do	
-!			close(10)
-
-!		!	CORRECCION DEL CAMPO DE PRESION
-
-!			call CORRECCION_PRESION(nx,ny,dx,dy,Re,P,phi,u_pred,v_pred)
-
-!			
-!			open(unit=10,file=dummy//'p.dat',access='SEQUENTIAL')
-!			do i=1,ny+2
-!				write(10,*) P(i,:)
-!			end do	
-!			close(10)
-!		
-!			print*,CDM
-!		
-!			read(*,*)	
-								
-		!	VERIFICAR CONVERGENCIA DE LAS VARIABLES
-
-!			call CALCULO_CONVERGENCIA(nx,ny,dx,dy,dt,u_pred,v_pred,phi,CDM)
-!									
-!			if ( CDM .lt. criterio1_convergencia .or. & 
-!				& niter .gt. criterio2_convergencia ) then
-!				info_ITER = 1
-!			end if
-
-!!			print*, CDM	
+			if ( R .lt. criterio1_convergencia .or. &
+			 &	niter .gt. criterio2_convergencia ) then
+				EXIT
+			end if
 
 		end do
-!		
-!		print*, 'ATENTO!!! SE CORRIGE LA VELOCIDAD!!'
-!		return
-!			
+		
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::
-!	
-!		info_ITER=0
-!			
-!!			CORRECCION DE LA VELOCIDAD
-!			
-!		call CORRECCION_VELOCIDAD(nx,ny,dx,dy,dt,u_pred,v_pred,phi,u_0,u_1,v_0,v_1)	
 
-!		
+!!			CORRECCION DE LA VELOCIDAD
+		
+		call CORRECCION_VELOCIDAD(nx,ny,dx,dy,dt,u_pred,v_pred,phi,u_0,u_1,v_0,v_1)	
+
+		open(unit=10,file=dummy//'u.dat',access='SEQUENTIAL')
+			do i=1,ny+2
+				write(10,*) u_1(i,:)
+			end do	
+		close(10)
+
+		open(unit=10,file=dummy//'p.dat',access='SEQUENTIAL')
+			do i=1,ny+2
+				write(10,*) P(i,:)
+			end do	
+		close(10)
+		
+		call system( 'gnuplot plot' )
+
+		print*, 'resto',R
+		print*, 'n iter', niter
+		read(*,*)
+		
+!:::::::::::::::::::::::::::::::::::::::::::::::::::::
+		
 	end do
 	
 	

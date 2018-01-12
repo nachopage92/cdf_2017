@@ -96,10 +96,6 @@ subroutine PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pre
 		
 	end do
 
-	do i=1,ny+2
-		write(1,*) dV(i,:)
-	end do
-
 !	-----------------------------------------------
 
 !			CALCULO EN LA DIRECCION Y
