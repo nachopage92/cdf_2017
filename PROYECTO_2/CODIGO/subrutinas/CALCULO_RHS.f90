@@ -30,7 +30,7 @@ subroutine  CALCULO_RHS(u,v,u0,v0,P,i,j,dx,dy,dt,str,RHS)
 	if ( str .eq. 'u' ) then
 		dP = (P(i,j)-P(i,j-1))*dy
 	else if ( str .eq. 'v' ) then
-		dP = (P(i+1,j)-P(i,j))*dy
+		dP = (P(i+1,j)-P(i,j))*dx
 	else
 		print*, 'ERROR'
 		RETURN
@@ -52,7 +52,7 @@ subroutine  CALCULO_RHS(u,v,u0,v0,P,i,j,dx,dy,dt,str,RHS)
 
 	RHS = ( phi_P - phi0_P )*(dy*dx)/3._8 &
 		& - (2._8*dt/3._8) * ( 2._8*H - H0 + dP - G )
-		
+	
 !:::::::::::::::::::::::::::::::::::::::::::::	
 
 	contains

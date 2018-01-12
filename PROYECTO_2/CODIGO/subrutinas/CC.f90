@@ -1,7 +1,6 @@
-subroutine CC(nx,ny,u,v,u_init)
+subroutine CC(nx,ny,u,v)
 	implicit none
 	integer,intent(in)	:: nx,ny
-	real(kind=8),intent(in)	:: u_init
 	real(kind=8),dimension(:,:),intent(inout) :: u,v
 
 ! CONDICIONES DE CONTORNO
@@ -23,16 +22,12 @@ subroutine CC(nx,ny,u,v,u_init)
 !		condicion de flujo periodico
 !			u(0,y) = u(Lx,y)
 !			du/dx(0,y) = du/dx(Lx,y)
-	u(:,nx+2) = u_init
-	u(:,ny+1) = u_init
-	u(:,1) = u(:,ny+1)
-	u(:,2) = u(:,nx+2)
+	u(:,1) = u(:,nx+1)
+	u(:,nx+2) = u(:,2)
 !			v(0,y) = v(Lx,y)
 !			dv/dx(0,y) = dv/dx(Lx,y)
-	v(:,nx+2) = 0._8
-	v(:,ny+1) = 0._8
-	v(:,1) = v(:,ny+1)
-	v(:,2) = v(:,nx+2)
-	
+	v(:,1) = v(:,nx+1)
+	v(:,nx+2) = v(:,2)
+
 	
 end subroutine

@@ -38,7 +38,7 @@ subroutine PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pre
 	real(kind=8) :: &
 		& RHS,alfa,beta
 		
-	real(kind=8),dimension(nx-2):: &
+	real(kind=8),dimension(nx):: &
 		& RHSx_u,diagux_d,diagux_c,diagux_u,dVx_u
 		
 	real(kind=8),dimension(ny):: &
@@ -68,18 +68,18 @@ subroutine PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pre
 !	en cada fila...
 	do i=2,ny+1
 	
-		contador = 0
-		
 !		...recorre las columnas (direccion x)
-		do j=3,nx+1
+		contador = 0
+		do j=2,nx+1
 			contador = contador + 1
 			call CALCULO_RHS(u_1,v_1,u_0,v_0,P,i,j,dx,dy,dt,'u',RHS)
 			RHSx_u(contador) = RHS
 		end do
-		
-		!considera las 
-		RHSx_u(2) = RHSx_u(2) - 4._8*dt*dx/(3._8*Re*dy)*u_1(i,2)
-		RHSx_u(nx) = RHSx_u(nx) - 4._8*dt*dx/(3._8*Re*dy)*u_1(i,nx)
+	
+		! se consideran los esfuerzos cortantes del roce con la pared
+		if ( i .eq. 2 ) then
+			RHSx_u(:) = RHSx_u(:) - (4._8*dt*dx)*u_1(i,j)/(3._8*Re*dy)
+		end if
 
 !			CALCULO DE dV_u EN CADA FILA	
 !		diagonales de la matriz tridiagonal	
@@ -91,44 +91,40 @@ subroutine PREDICCION_VELOCIDAD(nx,ny,dx,dy,dt,Re,P,u_1,u_0,v_1,v_0,u_pred,v_pre
 !		diagux_c(nx-1)=beta+alfa
 	
 !			primer paso predictor u-> resuelve dV_u0
-		call thomas(nx-2,diagux_d,diagux_c,diagux_u,dVx_u,RHSx_u)
-		dV(i,3:nx) = dVx_u(:)
-		write(3,*) dVx_u(:)
+		call thomas(nx,diagux_d,diagux_c,diagux_u,dVx_u,RHSx_u)
+		dV(i,2:nx+1) = dVx_u(:)
 		
-!	fin do direccion y (fila)
 	end do
 
 	do i=1,ny+2
 		write(1,*) dV(i,:)
 	end do
 
-	
-!!			CALCULO EN LA DIRECCION Y
+!	-----------------------------------------------
 
-!!	en cada columna...
-!	do j=3,nx+1
+!			CALCULO EN LA DIRECCION Y
 
-!!			CALCULO DE dV_u EN CADA FILA	
-!!		diagonales de la matriz tridiagonal	
-!		alfa = -2._8*dt*dx/(3._8*dy*Re)
-!		beta =  1._8*dx*dy + 4._8*dt*dx/(3._8*dy*Re)
-!		diaguy_u = alfa
-!		diaguy_c = beta
-!		diaguy_d = alfa
-!!		diaguy_c(1)=beta-alfa
-!!		diaguy_c(ny)=beta+alfa
-!	
-!!			primer paso predictor u-> resuelve dV_u0
-!		call thomas(ny,diaguy_d,diaguy_c,diaguy_u,dVy_u,dV(2:ny,j))
-!		u_pred(2:ny+1,j) = dVy_u(:)
-!				
-!!	fin do direccion y (fila)
-!	end do
+!	en cada columna...
+	do j=2,nx+1
 
-!!	PENDIENTE!!!
-!	v_pred=0._8
+!			CALCULO DE dV_u EN CADA FILA	
+!		diagonales de la matriz tridiagonal	
+		alfa = -2._8*dt/(3._8*dy**2._8*Re)
+		beta =  1._8 + 4._8*dt/(3._8*dy**2._8*Re)
+		diaguy_u = alfa
+		diaguy_c = beta
+		diaguy_d = alfa
+		
+!			segundo paso predictor u-> resuelve dV_u
+		call thomas(ny,diaguy_d,diaguy_c,diaguy_u,dVy_u,dV(2:ny+1,j))
+		u_pred(2:ny+1,j) = dVy_u(:)
+				
+	end do
 
-!return
+!	PENDIENTE!!!
+	v_pred=0._8
+
+return
 
 !!!::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !!!::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
