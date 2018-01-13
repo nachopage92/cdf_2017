@@ -94,14 +94,14 @@ program T2_CDF_2017_2S
 !		en t_(n)
 	allocate(u_0(ny+2,nx+2),v_0(ny+2,nx+2))
 	u_0 = 0._8
-	u_0(:,1) = u_init
-	u_0(:,2) = u_init
+	u_0(:,nx+1) = u_init
+	u_0(:,nx+2) = u_init
 	v_0 = 0._8
 !		en t_(n+1)
 	allocate(u_1(ny+2,nx+2),v_1(ny+2,nx+2))
 	u_1 = 0._8
-	u_1(:,1) = u_init
-	u_1(:,2) = u_init
+	u_1(:,nx+1) = u_init
+	u_1(:,nx+2) = u_init
 	v_1 = 0._8
 	
 	
@@ -141,7 +141,8 @@ program T2_CDF_2017_2S
 				
 				
 		!	PREDICCION DEL CAMPO DE VELOCIDAD NO SOLENOIDAL
-			call PREDICCION_VELOCIDAD(P,u_1,u_0,v_1,v_0,u_pred,v_pred)				
+			call PREDICCION_VELOCIDAD(P,u_1,u_0,v_1,v_0,u_pred,v_pred)		
+	
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !if ( niter .eq. 400 ) then	
@@ -172,7 +173,7 @@ program T2_CDF_2017_2S
 		end do
 		
 		
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !do i=1,ny+2
 !	write(1,*) u_pred(i,:)
 !end do
@@ -184,43 +185,43 @@ program T2_CDF_2017_2S
 !end do
 !print*,R,niter
 !return
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		
 		
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 !			CORRECCION DE LA VELOCIDAD
 		
-		call CORRECCION_VELOCIDAD(u_pred,v_pred,phi,u_0,u_1,v_0,v_1)
-		call CC(u_1,v_1)	
+		call CORRECCION_VELOCIDAD(u_pred,v_pred,phi,u_0,u_1,v_0,v_1)	
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!open(unit=10,file=dummy//'u.dat',access='SEQUENTIAL')
-!	do i=2,ny+1
-!		write(10,*) u_1(i,:)
-!	end do	
-!close(10)	
-!open(unit=10,file=dummy//'u0.dat',access='SEQUENTIAL')
-!	do i=2,ny+1
-!		write(10,*) u_0(i,:)
-!	end do	
-!close(10)
-!open(unit=10,file=dummy//'phi.dat',access='SEQUENTIAL')
-!	do i=2,ny+1
-!		write(10,*) phi(i,1:nx+1)
-!	end do	
-!close(10)
-!open(unit=10,file=dummy//'p.dat',access='SEQUENTIAL')
-!	do i=2,ny+1
-!		write(10,*) P(i,1:nx+1)
-!	end do	
-!close(10)
-!call system( 'gnuplot plot' )
-!print*, 'resto',R
-!print*, 'n iter', niter
-!read(*,*)
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+open(unit=10,file=dummy//'u.dat',access='SEQUENTIAL')
+	do i=2,ny+1
+		write(10,*) u_1(i,:)
+	end do	
+ close(10)	
+open(unit=10,file=dummy//'u0.dat',access='SEQUENTIAL')
+	do i=2,ny+1
+		write(10,*) u_0(i,:)
+	end do	
+ close(10)
+open(unit=10,file=dummy//'phi.dat',access='SEQUENTIAL')
+	do i=2,ny+1
+		write(10,*) phi(i,1:nx+1)
+	end do	
+ close(10)
+open(unit=10,file=dummy//'p.dat',access='SEQUENTIAL')
+	do i=2,ny+1
+		write(10,*) P(i,1:nx+1)
+	end do	
+ close(10)
+call system( 'gnuplot plot' )
+print*, 'resto',R
+print*, 'n iter', niter
+read(*,*)
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		
+	call CC(u_1,v_1)
 		
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::
 		

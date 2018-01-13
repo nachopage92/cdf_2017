@@ -63,9 +63,8 @@ subroutine PREDICCION_VELOCIDAD(P,u_1,u_0,v_1,v_0,u_pred,v_pred)
 			RHSx_u(contador) = RHS
 		end do
 		
-		
-!!		! se consideran los esfuerzos cortantes del roce con la pared
-		if ( i .eq. 2 ) then
+!		! se consideran los esfuerzos cortantes del roce con la pared
+		if ( i .eq. 3 ) then
 			RHSx_u(:) = RHSx_u(:) - (4._8*dt*dx)/(3._8*Re*dy)*u_1(i,j)	!REVISAR ESTOOOOOOOOOOOOOOOOOOOOOOOOOO ¿ES + O -?
 		end if
 		
