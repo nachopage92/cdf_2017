@@ -19,7 +19,8 @@ subroutine CORRECCION_PRESION(P,u,v,R,phi)
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 	
 	!resolucion ecuacion de Poisson para PHI
-	omega = 1.5_8 !acelera la convergencia
+	omega = 1._8
+	!omega = 1.5_8 !acelera la convergencia
 	do i=2,ny+1
 		do j=1,nx+1
 			phi(i,j) = - omega * (3._8/(4._8*dt)) * DIV(i,j,u,v) / ( 1._8/dx**2._8 + 1._8/dy**2._8 )

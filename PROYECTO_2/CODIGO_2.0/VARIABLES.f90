@@ -33,7 +33,7 @@ module variables
 	real(kind=8),parameter :: u_init = Re*gama/(rho*Ly*0.5_8)
 
 !	NUMERO DE Courant-Friedrich-Levy
-	real(kind=8),parameter :: CFL = 1._8
+	real(kind=8),parameter :: CFL = 0.1_8
 	
 !	PASO DE TIEMPO
 	real(kind=8),parameter :: dt = CFL * dx / u_init

@@ -39,6 +39,14 @@ program T2_CDF_2017_2S
 			real(kind=8),dimension(ny+2,nx+2),intent(in) :: u_pred,v_pred
 			real(kind=8),dimension(ny+2,nx+2),intent(inout) :: u_0,u_1,v_0,v_1
 		end subroutine		
+		
+		subroutine EXPORTAR_DATOS(x,y,u,v)
+			use variables
+			implicit none
+			real(kind=8),dimension(nx+2),intent(in) :: x
+			real(kind=8),dimension(ny+2),intent(in) :: y
+			real(kind=8),dimension(ny+2,nx+2),intent(in) :: u,v	
+		end subroutine
 
 	END INTERFACE
 	
@@ -53,15 +61,12 @@ program T2_CDF_2017_2S
 		P(:,:), phi(:,:), &
 		& u_pred(:,:),v_pred(:,:)
 		
-	character(len=3) :: dummy = 'cfd' 
+	character(len=4) :: dummy = 'cfd_' 
 	
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::
 	
-!	PREAMBULO 
-!	predefinido en el modulo 'variables'
 	
-!:::::::::::::::::::::::::::::::::::::::::::::::::::::	
-
+!	PREAMBULO 
 
 !	VARIABLES EN LA MALLA DESPLAZADA
 !		P en nodo ( x_2 , y_2 )
@@ -78,16 +83,14 @@ program T2_CDF_2017_2S
 
 !	MALLA PRINCIPAL ( x_1 , y_1 )
 	allocate(x_1(ny+2),y_1(nx+2))
-	x_1 = (/ ( (dfloat(i)-1.0_8)*dx,i=0,nx+1 ) /)
-	y_1 = (/ ( (dfloat(i)-1.0_8)*dy,i=0,ny+1 ) /) 
-
-
+	x_1 = (/ ( (dfloat(i)-1.0_8)*dx,i=1,nx+2 ) /)
+	y_1 = (/ ( (dfloat(i)-1.0_8)*dy,i=1,ny+2 ) /) 
+	
 
 !	MALLA SECUNDARIA ( x_2 , y_2 )
 	allocate(x_2(ny+2),y_2(nx+2))
-	x_2 = (/ ( (dfloat(i)-0.5_8)*dx,i=0,nx+1 ) /)
-	y_2 = (/ ( (dfloat(i)-0.5_8)*dy,i=0,ny+1 ) /)
-
+	x_2 = (/ ( (dfloat(i)-0.5_8)*dx,i=1,nx+2 ) /)
+	y_2 = (/ ( (dfloat(i)-0.5_8)*dy,i=1,ny+2 ) /)
 
 
 !	VELOCIDAD INICIAL
@@ -113,7 +116,7 @@ program T2_CDF_2017_2S
 	
 !	FUNCION AUXILIAR PHI
 	allocate(phi(ny+2,nx+2))
-
+	
 
 !	IMPOSICION DE LAS CONDICIONES DE CONTORNO
 	call CC(u_0,v_0)
@@ -134,34 +137,41 @@ program T2_CDF_2017_2S
 	
 		niter = 0
 		
-		do
+		do		
+
 			u_pred = 0._8
 			v_pred = 0._8
 			niter = niter + 1
 				
-				
 		!	PREDICCION DEL CAMPO DE VELOCIDAD NO SOLENOIDAL
-			call PREDICCION_VELOCIDAD(P,u_1,u_0,v_1,v_0,u_pred,v_pred)		
-	
+			call PREDICCION_VELOCIDAD(P,u_1,u_0,v_1,v_0,u_pred,v_pred)	
+			
+			
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!if ( niter .eq. 400 ) then	
-!	write(1,*) 'u_pred'		
+!if ( (k .eq. 3) ) then	
+!	write(10,*) 'u_pred'		
 !	do i=1,ny+2
-!		write(1,*) u_pred(i,:)
+!		write(10,*) u_pred(i,:)
 !	end do
-!	write(2,*) 'phi'	
+!	write(11,*) 'v_pred'		
 !	do i=1,ny+2
-!			write(2,*) phi(i,:)
+!		write(11,*) v_pred(i,:)
 !	end do
-!	write(3,*) 'P'	
+!	write(12,*) 'phi'	
 !	do i=1,ny+2
-!			write(3,*) P(i,:)
+!			write(12,*) phi(i,:)
+!	end do
+!	write(13,*) 'P'	
+!	do i=1,ny+2
+!			write(13,*) P(i,:)
 !	end do
 !	print*,niter
 !	return
 !end if
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 												
 !			CORRECCION DE LA PRESION
 			call CORRECCION_PRESION(P,u_pred,v_pred,R,phi)
@@ -170,58 +180,55 @@ program T2_CDF_2017_2S
 				EXIT
 			end if
 
+
 		end do
-		
-		
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!do i=1,ny+2
-!	write(1,*) u_pred(i,:)
-!end do
-!do i=1,ny+2
-!	write(2,*) P(i,:)
-!end do
-!do i=1,ny+2
-!	write(3,*) phi(i,:)
-!end do
-!print*,R,niter
-!return
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		
-		
+	
+
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 !			CORRECCION DE LA VELOCIDAD
 		
-		call CORRECCION_VELOCIDAD(u_pred,v_pred,phi,u_0,u_1,v_0,v_1)	
+		call CORRECCION_VELOCIDAD(u_pred,v_pred,phi,u_0,u_1,v_0,v_1)
 
+		call EXPORTAR_DATOS(x_1,y_1,u_1,v_1)
+		
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-open(unit=10,file=dummy//'u.dat',access='SEQUENTIAL')
-	do i=2,ny+1
-		write(10,*) u_1(i,:)
-	end do	
- close(10)	
-open(unit=10,file=dummy//'u0.dat',access='SEQUENTIAL')
-	do i=2,ny+1
-		write(10,*) u_0(i,:)
-	end do	
- close(10)
-open(unit=10,file=dummy//'phi.dat',access='SEQUENTIAL')
-	do i=2,ny+1
-		write(10,*) phi(i,1:nx+1)
-	end do	
- close(10)
-open(unit=10,file=dummy//'p.dat',access='SEQUENTIAL')
-	do i=2,ny+1
-		write(10,*) P(i,1:nx+1)
-	end do	
- close(10)
-call system( 'gnuplot plot' )
+
+!open(unit=10,file=dummy//'u.dat',access='SEQUENTIAL')
+!	do i=2,ny+1
+!		write(10,*) u_1(i,:)
+!	end do	
+! close(10)	
+
+!open(unit=10,file=dummy//'v.dat',access='SEQUENTIAL')
+!	do i=2,ny+1
+!		write(10,*) v_1(i,:)
+!	end do	
+! close(10)
+
+!open(unit=10,file=dummy//'phi.dat',access='SEQUENTIAL')
+!	do i=2,ny+1
+!		write(10,*) phi(i,1:nx+1)
+!	end do	
+! close(10)
+
+!open(unit=10,file=dummy//'p.dat',access='SEQUENTIAL')
+!	do i=2,ny+1
+!		write(10,*) P(i,1:nx+1)
+!	end do	
+! close(10)
+
+
 print*, 'resto',R
 print*, 'n iter', niter
 read(*,*)
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 		
-	call CC(u_1,v_1)
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+		call CC(u_1,v_1)
+		
 		
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::
 		

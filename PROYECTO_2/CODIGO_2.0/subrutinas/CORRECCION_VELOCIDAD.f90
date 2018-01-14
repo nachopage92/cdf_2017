@@ -6,9 +6,13 @@ subroutine CORRECCION_VELOCIDAD(u_pred,v_pred,phi,u_0,u_1,v_0,v_1)
 	real(kind=8),dimension(ny+2,nx+2),intent(inout) :: u_0,u_1,v_0,v_1
 	
 	integer :: i,j
+	
+!::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	u_0 = u_1
 	v_0 = v_1
+
+!::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 		
 	do i=2,ny+1
 		do j=2,nx+1
@@ -16,11 +20,14 @@ subroutine CORRECCION_VELOCIDAD(u_pred,v_pred,phi,u_0,u_1,v_0,v_1)
 		end do
 	end do
 	
+!::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 	
-!	do i=2,ny+1
-!		do j=2,nx+1
-!			v_1(i,j) = v_pred(i,j) - dt * (phi(i+1,j)-phi(i,j))/dy
-!		end do
-!	end do
-	
+	do i=2,ny
+		do j=2,nx+1
+			v_1(i,j) = v_pred(i,j) - dt * (phi(i+1,j)-phi(i,j))/dy
+		end do
+	end do
+
+!::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::	
+
 end subroutine
