@@ -1,5 +1,9 @@
 module variables
 
+!::::::::::::::::::::::::::::::::::::::::::::::
+
+	implicit none
+
 !	PARAMETROS
 
 !	NUMERO DE VOLUMENES
@@ -30,7 +34,8 @@ module variables
 	real(kind=8),parameter :: dy = Ly/dfloat(ny)	
 
 !	VELOCIDAD ENTRADA
-	real(kind=8),parameter :: u_init = Re*gama/(rho*Ly*0.5_8)
+	real(kind=8),parameter :: &
+		& u_init = Re*gama/(rho*Ly*0.5_8)
 
 !	NUMERO DE Courant-Friedrich-Levy
 	real(kind=8),parameter :: CFL = 0.1_8
@@ -43,5 +48,7 @@ module variables
 	
 !	NUMERO DE PASOS
 	integer,parameter :: nt = T/dt
+	
+!::::::::::::::::::::::::::::::::::::::::::::::
 
 end module

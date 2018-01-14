@@ -1,6 +1,5 @@
 subroutine EXPORTAR_DATOS(x,y,u,v)
 	use variables
-	implicit none
 	real(kind=8),dimension(nx+2),intent(in) :: x
 	real(kind=8),dimension(ny+2),intent(in) :: y
 	real(kind=8),dimension(ny+2,nx+2),intent(in) :: u,v	

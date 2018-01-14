@@ -1,6 +1,5 @@
 subroutine CORRECCION_PRESION(P,u,v,R,phi)
 	use variables
-	implicit none
 	!entrada
 	real(kind=8),dimension(ny+2,nx+2),intent(in) :: u,v
 	!entrada/salida
@@ -12,7 +11,7 @@ subroutine CORRECCION_PRESION(P,u,v,R,phi)
 	!local
 	integer :: i,j,k,contador
 	real(kind=8) :: omega
-	real(kind=8),dimension(ny*(nx-1)) :: R_vec
+	real(kind=8),dimension(ny*(nx-2)) :: R_vec
 
 	phi = 0._8
 
@@ -22,7 +21,7 @@ subroutine CORRECCION_PRESION(P,u,v,R,phi)
 	omega = 1._8
 	!omega = 1.5_8 !acelera la convergencia
 	do i=2,ny+1
-		do j=1,nx+2
+		do j=2,nx+2
 			phi(i,j) = - omega * (3._8/(4._8*dt)) * DIV(i,j,u,v) / ( 1._8/dx**2._8 + 1._8/dy**2._8 )
 		end do
 	end do
@@ -35,7 +34,7 @@ subroutine CORRECCION_PRESION(P,u,v,R,phi)
 	!correccion de la presion
 	
 	do i=2,ny+1
-		do j=1,nx+1
+		do j=2,nx+1
 			P(i,j) = P(i,j) - DIV(i,j,u,v)/Re + phi(i,j)
 		end do
 	end do
@@ -47,7 +46,7 @@ subroutine CORRECCION_PRESION(P,u,v,R,phi)
 	
 	contador = 0
 	do i=2,ny+1
-		do j=2,nx
+		do j=3,nx
 			contador = contador + 1
 			R_vec(contador) =  LAP(i,j,phi) 
 		end do

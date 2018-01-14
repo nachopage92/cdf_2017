@@ -10,13 +10,11 @@ program T2_CDF_2017_2S
 
 		subroutine CC(u,v)
 			use variables
-			implicit none
 			real(kind=8),dimension(ny+2,nx+2),intent(inout) :: u,v
 		end subroutine
 		
 		subroutine PREDICCION_VELOCIDAD(P,u_1,u_0,v_1,v_0,u_pred,v_pred)
 			use variables
-			implicit none
 			real(kind=8),dimension(ny+2,nx+2),intent(in):: &
 				& P , u_1 , u_0 , v_1 , v_0
 			real(kind=8),dimension(ny+2,nx+2),intent(out):: &
@@ -25,7 +23,6 @@ program T2_CDF_2017_2S
 		
 		subroutine CORRECCION_PRESION(P,u,v,R,phi)
 			use variables
-			implicit none
 			real(kind=8),dimension(ny+2,nx+2),intent(in) :: u,v
 			real(kind=8),dimension(ny+2,nx+2),intent(inout) :: P
 			real(kind=8),intent(out) :: R
@@ -34,7 +31,6 @@ program T2_CDF_2017_2S
 
 		subroutine CORRECCION_VELOCIDAD(u_pred,v_pred,phi,u_0,u_1,v_0,v_1)
 			use variables
-			implicit none
 			real(kind=8),dimension(ny+2,nx+2),intent(in) :: phi
 			real(kind=8),dimension(ny+2,nx+2),intent(in) :: u_pred,v_pred
 			real(kind=8),dimension(ny+2,nx+2),intent(inout) :: u_0,u_1,v_0,v_1
@@ -42,7 +38,6 @@ program T2_CDF_2017_2S
 		
 		subroutine EXPORTAR_DATOS(x,y,u,v)
 			use variables
-			implicit none
 			real(kind=8),dimension(nx+2),intent(in) :: x
 			real(kind=8),dimension(ny+2),intent(in) :: y
 			real(kind=8),dimension(ny+2,nx+2),intent(in) :: u,v	
@@ -50,16 +45,18 @@ program T2_CDF_2017_2S
 
 	END INTERFACE
 	
+!:::::::::::::::::::::::::::::::::::::::::::::::::::::
+	
 	integer :: i,j,k,contador,niter
 	
 	real(kind=8) :: R
 	
-	real(kind=8),allocatable :: &
-		& x_1(:),x_2(:),y_1(:),y_2(:), &
-		& u_0(:,:),v_0(:,:), &
-		& u_1(:,:),v_1(:,:), &
-		P(:,:), phi(:,:), &
-		& u_pred(:,:),v_pred(:,:)
+	real(kind=8),dimension(nx+2) :: x_1,x_2
+	
+	real(kind=8),dimension(ny+2) :: y_1,y_2
+	
+	real(kind=8),dimension(ny+2,nx+2) :: &
+		& u_0,v_0,u_1,v_1,P,phi,u_pred,v_pred	 
 		
 	character(len=4) :: title = 'cfd_' 
 	
@@ -81,27 +78,23 @@ program T2_CDF_2017_2S
 !	...		...		...		...			...
 	
 
-!	MALLA PRINCIPAL ( x_1 , y_1 )
-	allocate(x_1(ny+2),y_1(nx+2))
+!	MALLA PRINCIPAL
 	x_1 = (/ ( (dfloat(i)-1.0_8)*dx,i=1,nx+2 ) /)
 	y_1 = (/ ( (dfloat(i)-1.0_8)*dy,i=1,ny+2 ) /) 
 	
-
-!	MALLA SECUNDARIA ( x_2 , y_2 )
-	allocate(x_2(ny+2),y_2(nx+2))
+	
+!	MALLA SECUNDARIA
 	x_2 = (/ ( (dfloat(i)-0.5_8)*dx,i=1,nx+2 ) /)
 	y_2 = (/ ( (dfloat(i)-0.5_8)*dy,i=1,ny+2 ) /)
 
 
 !	VELOCIDAD INICIAL
 !		en t_(n)
-	allocate(u_0(ny+2,nx+2),v_0(ny+2,nx+2))
 	u_0 = 0._8
 	u_0(2:ny+1,nx+1) = u_init
 	u_0(2:ny+1,nx+2) = u_init
 	v_0 = 0._8
 !		en t_(n+1)
-	allocate(u_1(ny+2,nx+2),v_1(ny+2,nx+2))
 	u_1 = 0._8
 	u_1(2:ny+1,nx+1) = u_init
 	u_1(2:ny+1,nx+2) = u_init
@@ -110,12 +103,7 @@ program T2_CDF_2017_2S
 	
 !	CAMPO DE PRESION INICIAL
 !		en t_(n)
-	allocate(P(ny+2,nx+2))
 	P = 0._8
-
-	
-!	FUNCION AUXILIAR PHI
-	allocate(phi(ny+2,nx+2))
 	
 
 !	IMPOSICION DE LAS CONDICIONES DE CONTORNO
@@ -127,9 +115,6 @@ program T2_CDF_2017_2S
 
 
 !			INICIO INTEGRACION TEMPORAL
-
-!	PREDICTOR DE VELOCIDAD
-	allocate(u_pred(ny+2,nx+2),v_pred(ny+2,nx+2))
 
 	do k = 1 , nt
 	
@@ -147,7 +132,6 @@ program T2_CDF_2017_2S
 				
 		!	PREDICCION DEL CAMPO DE VELOCIDAD NO SOLENOIDAL
 			call PREDICCION_VELOCIDAD(P,u_1,u_0,v_1,v_0,u_pred,v_pred)	
-
 												
 !			CORRECCION DE LA PRESION
 			call CORRECCION_PRESION(P,u_pred,v_pred,R,phi)
@@ -155,12 +139,12 @@ program T2_CDF_2017_2S
 			 &	niter .gt. criterio2 ) then
 				EXIT
 			end if
-
-
+			
 		end do
 	
-
+	
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::
+
 
 !			CORRECCION DE LA VELOCIDAD
 		
@@ -168,46 +152,12 @@ program T2_CDF_2017_2S
 
 		call EXPORTAR_DATOS(x_1,y_1,u_1,v_1)
 		
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-open(unit=10,file=title//'u.dat',access='SEQUENTIAL')
-	do i=2,ny+1
-		write(10,*) u_1(i,:)
-	end do	
- close(10)	
-
-open(unit=10,file=title//'v.dat',access='SEQUENTIAL')
-	do i=2,ny+1
-		write(10,*) v_1(i,:)
-	end do	
- close(10)
-
-open(unit=10,file=title//'phi.dat',access='SEQUENTIAL')
-	do i=2,ny+1
-		write(10,*) phi(i,1:nx+1)
-	end do	
- close(10)
-
-open(unit=10,file=title//'p.dat',access='SEQUENTIAL')
-	do i=2,ny+1
-		write(10,*) P(i,1:nx+1)
-	end do	
- close(10)
-
-print*, 'resto',R
-print*, 'n iter', niter
-read(*,*)		
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+		read(*,*)
+		
 		call CC(u_1,v_1)
 		
-		
-!:::::::::::::::::::::::::::::::::::::::::::::::::::::
-		
 	end do
-	
-	
+			
 
 !!:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
