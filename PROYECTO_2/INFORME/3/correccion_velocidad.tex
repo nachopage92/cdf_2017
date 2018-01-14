@@ -1,0 +1,9 @@
+\subsection{Correción del campo de velocidad}
+
+Una vez resuelto la ecuación de Poisson se procede a corregir la velocidad predicha en el primer paso:
+
+\begin{equation}
+\vec{v}^{n+1} = \vec{v} - \Delta t \nabla \phi
+\end{equation}
+
+Se recurre a la misma discretización utilizada en la ecuación (\ref{poisson_discreto}) para el campo auxiliar $\phi$.

@@ -1,0 +1,19 @@
+\subsection{Ecuación de Navier Stokes discretizado}
+
+La ecuación de conservación de la masa y de cantidad de movimiento para un fluido Newtoniano incompresible, despreciando los términos asociados al peso se pueden representar como:
+
+\begin{equation}
+\nabla \cdot \vect{v} = 0
+\end{equation}
+
+\begin{equation} \label{cdml}
+\rho \dfrac{\partial \vect{v}}{ \partial t} + \rho \vect{v} \cdot \nabla \vect{v} = - \vec{\nabla} P + \nu \dfrac{ \partial^2 \vect{v} }{ \partial x^2 }
+\end{equation}
+
+La ecuación (\ref{cdml}) se expresa en forma adimensional. En coordenadas rectangulares se escribe:
+
+\begin{equation}
+\dfrac{\partial v_i^*}{\partial t^*} + v_j^* \dfrac{\partial v_i^*}{\partial x_j^*} = - \dfrac{\partial P^*}{\partial x_i^*} + \dfrac{1}{Re} \dfrac{\partial^2 v_i^*}{\partial x_j^* \, \partial x_j^*}
+\end{equation}
+
+Donde $v_i^*$, $P^*$, $x_j^*$ , $t^*$ representa a la variable adimensionadas respectivas. Para precindir de la notación ($^*$) se asume que todas las variables a utilizar están adimensionadas

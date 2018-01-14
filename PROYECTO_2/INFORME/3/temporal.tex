@@ -1,0 +1,20 @@
+\section{Procedimiento computacional}
+
+Se plantea un esquema BFD2 (\textit{Backward Differentiation Formula 2nd Order}). La derivada temporal $\partial \vect{v} / \partial t$ se aproxima mediante,
+
+\begin{equation}
+\dfrac{\partial \vect{v}}{\partial t} ^ {n+1} = \dfrac{3 \vect{v}^{n+1} -4\vect{v}^n + \vect{v}^{n-1}}{2 \Delta t} + \Theta(\Delta t^2) 
+\end{equation}
+
+El término convectivo en $t_{n+1}$ se obtiene por extrapolación de los términos en los instantes $t_{n}$ y $t_{n-1}$
+
+\begin{equation}
+H(\vect{v}^{n+1}) = 2 H(\vect{v}^n) - H(\vect{v}^{n-1})
+\end{equation}
+
+La ecuación a resolver mediante el método de volumenes finitos es:
+
+\begin{equation} \label{ecuación_gobernante}
+\dfrac{3 \vect{v}^{n+1} -4\vect{v}^n + \vect{v}^{n-1}}{2 \Delta t} + H(\vect{v}^{n+1}) = -\vec{\nabla} P + G(\vect{v}^{n+1})
+\end{equation}
+

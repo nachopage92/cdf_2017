@@ -1,0 +1,34 @@
+%---------------------------------------------------
+
+\subsection{Discretización espacial}
+
+Ecuación de conservación/transporte de un escalar pasivo $\phi$:
+
+\begin{equation} \label{transporte}
+\dfrac{\partial \phi}{\partial t} + \nabla \cdot J = S_{\phi}
+\end{equation}
+
+donde $S_{\phi}$ representa el término fuente asociado a $\phi$ y $J$ a la contribución del flujo convectivo y difusivo:
+
+\begin{equation}
+J = \vect{v} \phi - \dfrac{1}{Re} \vec{\nabla} \phi
+\end{equation}
+
+Para obtener la formulación en volumenes finitos se aplica el método de residuos ponderados a la ecuación, con soporte compacto y utilizando el método de Galerkin [CITAR LIBRO]. Se recurre al teorema de valor medio representar la integral en función de terminos centrales. Sea $\phi_J$ un valor aproximado que caracteriza al escalar dentro del volumen de control $\Omega_{cv} = \Omega_J$. La ecuación discretizada resulta [CITAR LIBRO]:
+
+\begin{equation}
+\dfrac{\partial}{\partial t} \left( \phi_J \Omega_J \right) + \sum \left( F_i \, A_i \right)_J = \left( S_{\phi} \right)_J
+\end{equation} 
+
+Donde $F_i$ corresponde la contribución del flujo convectivo y difusivo en la cara $A_i$.
+\begin{equation}
+F = \underbrace{H(\phi)_C}_{\vect{v} \phi} + \underbrace{G(\phi)_D}_{-\vec{\nabla} \phi / Re}
+\end{equation}
+
+%---------------------------------------------------
+
+\input{./2/convectivo.tex}
+	
+%-------------------------------------------------
+
+\input{./2/difusivo.tex}

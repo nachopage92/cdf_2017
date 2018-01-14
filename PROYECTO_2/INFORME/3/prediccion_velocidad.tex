@@ -1,0 +1,103 @@
+\subsection{Predicción del campo de velocidad no solenoidal $\vect{v}^*$}
+
+La resolución de \ref{ecuación_gobernante} requiere del cálculo de un predictor de la velocidad $\vect{v}$ dado por:
+
+\begin{equation}
+\dfrac{3 \vect{v}^{*} -4\vect{v}^n + \vect{v}^{n-1}}{2 \Delta t} + H(\vect{v}^{n+1}) = -\vec{\nabla} P + G(\vect{v}^{*})
+\end{equation}
+
+Sea $\vect{\delta V} = \vect{v}^* - \vect{v}^n $ y mediante una manipulación algebráica de la ecuación (\ref{ecuación_gobernante}) se obtiene una ecuación equivalente.
+
+\begin{equation} \label{ecuación_gobernante_modificada}
+\left( I - \dfrac{2 \Delta t}{3 \, Re} \Delta \right) \vect{\delta V} = \dfrac{\vect{v}^n-\vect{v}^{n-1}}{3} - \dfrac{2 \Delta t}{3} \left( 2 H(\vect{v}^n) - H(\vect{v}^{n-1}) + \vec{\nabla} P - G(\vect{v}^n) \right)
+\end{equation} 
+
+Aplicando el método ADI (\textit{Alternating Direction Implicit}) para descomponer al operador de Helmholtz ($I - \frac{2 \Delta t}{3 \, Re} \Delta $)
+
+\begin{equation}
+\left( I - \dfrac{2 \Delta t}{3 \, Re} \Delta \right) \approx \left( I - \dfrac{2 \Delta t}{3 \, Re} \dfrac{\partial^2}{\partial y^2} \right) \left( I - \dfrac{2 \Delta t}{3 \, Re} \dfrac{\partial^2}{\partial x^2} \right)
+\end{equation}
+
+Luego, resolver (\ref{ecuación_gobernante_modificada}) es equivalente de manera aproximada a resolver
+
+\begin{equation}
+\left( I - \dfrac{2 \Delta t}{3 \, Re} \dfrac{\partial^2}{\partial y^2} \right)  \left( I - \dfrac{2 \Delta t}{3 \, Re} \dfrac{\partial^2}{\partial x^2} \right) \delta V =  \dfrac{\vec{v}^n-\vec{v}^{n-1}}{3} - \dfrac{2 \Delta t}{3} \left( H(\vec{v}^{n+1}) + \vec{\nabla} P) \right)
+\end{equation}
+
+O bien,
+
+\begin{align}
+\left( I - \dfrac{2 \Delta t}{3 \, Re} \dfrac{\partial^2}{\partial x^2} \right) \delta \overline{V} &= RHS^n \label{primer_paso} \\ 
+\left( I - \dfrac{2 \Delta t}{3 \, Re} \dfrac{\partial^2}{\partial y^2} \right) \delta V &= \overline{V} 
+\end{align}
+
+\subsubsection{Primer paso en la dirección $x$ ($\delta \overline{V}$)} 
+
+Explicitando los términos de $RHS^n$ de la ecuación (\ref{primer_paso})
+
+\begin{equation}
+\left( I - \dfrac{2 \Delta t}{3 \, Re} \dfrac{\partial^2}{\partial x^2} \right) \delta \overline{V} = \dfrac{\vec{v}^n-\vec{v}^{n-1}}{3} - \dfrac{2 \Delta t}{3} \left( H(\vec{v}^{n+1}) + \vec{\nabla} P) \right) = RHS^n
+\end{equation}
+
+Recurriendo al método de residuos ponderados,
+
+\begin{equation} 
+\iiint_{\Omega} \Psi_i \left[ \left( I - \dfrac{2 \Delta t}{3 \, Re}  \dfrac{\partial^2}{\partial x^2} \right) \delta \overline{V}_i - RHS^n \right] \, dV = 0
+\end{equation}
+
+Y aplicando la formulación para volúmenes finitos, desarrrollando el primer término de la izquierda
+
+\begin{equation}
+\iiint_{\Omega_{cv}} \left( I - \dfrac{2 \Delta t}{3 \, Re}  \dfrac{\partial^2}{\partial x^2} \right) \delta \overline{V} \, dV =  \underbrace{\iiint_{\Omega_{cv}} \delta \overline{V} \, dV}_{(*)}  - \underbrace{\dfrac{2 \Delta t}{3 \, Re} \iiint_{\Omega_{cv}}  \dfrac{\partial^2 (\delta \overline{V}) }{\partial x^2} \, dV}_{(**)}
+\end{equation}
+
+Resolviendo $(*)$
+
+\begin{equation}
+\iiint_{\Omega_{cv}} \delta \overline{V} \, dV \approx  (\delta \overline{V})_P \, \Delta x \Delta y
+\end{equation}
+
+Resolviendo $(**)$
+
+\begin{equation}
+\dfrac{2 \Delta t}{3 \, Re} \iiint_{\Omega_{cv}}  \dfrac{\partial^2 (\delta \overline{V}) }{\partial x^2} \, dV \approx \dfrac{2 \, \Delta t}{3 \, Re} \dfrac{\Delta y}{\Delta x} \left( \delta \overline{V}_E -2 \delta \overline{V}_P + \delta \overline{V}_W \right)
+\end{equation}
+
+Reemplazando $(**)$ y $(***)$ en la (\ref{primer_paso}) se obtiene:
+
+\begin{equation}
+(\delta \overline{V})_P \, \Delta x \Delta y - \dfrac{2 \, \Delta t}{3 \, Re} \dfrac{\Delta y}{\Delta x} \left( \delta \overline{V}_E -2 \delta \overline{V}_P + \delta \overline{V}_W \right) = \iiint_{\Omega_{cv}} RHS^n \, dV
+\end{equation}
+
+El término $RHS^n$ se reemplaza por la ecuación la discretización planteada en la Sección \ref{seccion2} y por el campo de presión definido arbitrariamente a \textit{priori}. La ecuación anterior se traduce en resolver un sistemas de ecuaciones tridiagonal dado por,
+
+\begin{equation}
+\begin{split}
+\left( - \dfrac{2 \, \Delta t}{3 \, Re} \dfrac{\Delta y}{\Delta x}  \right) \delta \overline{V}_E + \left( \Delta x \, \Delta y + \dfrac{4 \, \Delta t}{3 \, Re} \dfrac{\Delta y}{\Delta x}  \right) \delta \overline{V}_P + \left( - \dfrac{2 \, \Delta t}{3 \, Re} \dfrac{\Delta y}{\Delta x}  \right) \delta \overline{V}_W \\
+ = \iiint_{\Omega_{cv}} RHS^n \, dV
+\end{split}
+\end{equation}
+
+\subsubsection{Segundo paso en la dirección $y$ ($\delta V$)}
+
+Se procede similar al paso anterior, con la diferencia de que no se aplica el método de volúmenes finitos, ya que se aplica sólo a un factor de la descomposición.  
+
+\begin{equation}
+(\delta \overline{V})_P - \dfrac{2 \, \Delta t}{3 \, Re} \dfrac{1}{(\Delta y)^2} \left( \delta V_E -2 \delta V_P + \delta V_W \right) = \delta \overline{V}_P
+\end{equation}
+
+Reeordenando los términos para obtener un sistema de ecuaciones tridiagonal
+
+\begin{equation}
+\begin{split}
+\left( - \dfrac{2 \, \Delta t}{3 \, Re} \dfrac{1}{(\Delta y)^2}  \right) \delta V_E + \left( 1 + \dfrac{4 \, \Delta t}{3 \, Re} \dfrac{1}{(\Delta y)^2}  \right) \delta V_P + \left( - \dfrac{2 \, \Delta t}{3 \, Re} \dfrac{1}{(\Delta y)^2}  \right) \delta V_W \\
+ = \delta \overline{V}_P
+\end{split}
+\end{equation}
+
+\paragraph{Observación} los pasos anteriores se realizan tanto para $u$ como para $v$ ya que $\vec{v}=\left\{ u,v \right\}^T$ y $\delta V = \vec{v}^* - \vec{v}^n $. Cada paso de tiempo implica resolver 4 sistemas tridiagonales: 2 sistemas para la componente horizontal y 2 sistemas para la componente vertical de la velocidad. Finalmente se obtiene el predictor de la velocidad:
+
+\begin{equation}
+\vec{v}^* = \Big| \begin{matrix} u^* = u^n + \delta V_x \\ v^* = v^n + \delta V_y
+\end{matrix}
+\end{equation}

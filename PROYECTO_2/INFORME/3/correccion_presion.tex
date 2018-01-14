@@ -1,0 +1,73 @@
+\subsection{Resolución de la ecuación de Poisson sobre la presión}
+
+\begin{equation}
+\Delta \phi = \dfrac{3}{2 \Delta t} \nabla \cdot \vec{v}^*
+\end{equation}
+
+\begin{equation}
+\phi = \left( P^{n+1} - P^n \right) + \dfrac{1}{Re} \nabla \cdot \vec{v}^* 
+\end{equation}
+
+Nuevamente se aplica el método de residuos ponderados con formulación para volúmenes finitos.
+
+\begin{equation}
+\iiint_{\Omega} \Psi_i  \left[ \Delta \phi - \dfrac{3}{2 \Delta t} \nabla \cdot v_i^* \right] \, dV = 0
+\end{equation}
+
+Luego,
+
+\begin{equation}
+\iiint_{\Omega_J} \Delta \phi \, dV = \iiint_{\Omega_J} \dfrac{3}{2 \Delta t} \nabla \cdot v_i^* \, dV
+\end{equation}
+
+Recurriendo al teorema de Green-Ostrogradsky se rescribe la ecuación:
+
+\begin{equation}
+\iint_{\partial \Omega_J} \vec{\nabla} \phi \vec{n} \, dA = \dfrac{3}{2 \Delta t} \iint_{\partial \Omega_J} \vec{v}^* \cdot \vec{n} \, dA
+\end{equation}
+
+\paragraph{Discretización} La función auxiliar $\phi$ se discretiza en la malla desplazada asociada a la presión. Luego, los valores de los flujos de $\phi$ se aproximan en los bordes de cada volumen finito $\Omega_J$, mientras que los valores de las velocidad en $\partial \Omega_J$ son conocidos, sin necesidad de aproximarlos.
+
+\begin{equation}
+\begin{split}
+\left[ \dfrac{\partial \phi}{\partial x} \Big|_e - \dfrac{\partial \phi}{\partial x} \Big|_w \right] \Delta y + \left[ \dfrac{\partial \phi}{\partial y} \Big|_n - \dfrac{\partial \phi}{\partial y} \Big|_s \right] \Delta x = \\ \dfrac{3}{2 \Delta t} \left( u^*_e - u_w^*  \right) + \dfrac{3}{2 \Delta t} \left( v^*_n - v_s^*  \right)
+\end{split}
+\end{equation}
+
+Se discretizan las derivadas de $\phi$ implementando un esquemas CDS, obteniendose:
+
+\begin{equation} \label{poisson_discreto}
+\begin{split}
+\left[ \dfrac{\phi_E-2\phi_P+\phi_W}{\Delta x} \right] \Delta y - \left[ \dfrac{\phi_N-2\phi_P+\phi_S}{\Delta y} \right] \Delta x = \\ \dfrac{3}{2 \Delta t} \left( u_e^* - u_w^* + v_n^* - v_s^* \right)
+\end{split}  
+\end{equation}
+
+Agrupando los términos $\phi_{nb}$ resulta un sistema de ecuaciones lineales que en forma matricial se representa por una matriz pentadiagonal. Para resolverlo se utiliza el algoritmo TDMA (\textit{Tri-Diagonal MAtrix Algorithm}). Para ellos se define el término $B$ como,
+
+\begin{equation}
+B =  \dfrac{3}{2 \Delta t} \left( u_e^* - u_w^* + v_n^* - v_s^* \right)
+\end{equation}
+
+Se calcula un predictor (I):
+
+\begin{equation}
+\begin{split}
+\left( \dfrac{\Delta y}{\Delta x} \right) \phi_E^I - \left( 2 \dfrac{\Delta y}{\Delta x} + 2 \dfrac{\Delta x}{\Delta y} \right) \phi_P^I + \left( \dfrac{\Delta y}{\Delta x} \right) \phi_W^I = \\ \left( \dfrac{\Delta x}{\Delta y} \right) \phi_N + \left( \dfrac{\Delta x}{\Delta y} \right) \phi_S + B
+\end{split}
+\end{equation}
+
+Se calcula una corrección (II):
+
+\begin{equation}
+\begin{split}
+\left( \dfrac{\Delta x}{\Delta y} \right) \phi_N^{II} - \left( 2 \dfrac{\Delta y}{\Delta x} + 2 \dfrac{\Delta x}{\Delta y} \right) \phi_P^{II} + \left( \dfrac{\Delta x}{\Delta y} \right) \phi_S^{II} = \\ \left( \dfrac{\Delta y}{\Delta x} \right) \phi_E^I + \left( \dfrac{\Delta y}{\Delta x} \right) \phi_W^I + B
+\end{split}
+\end{equation}
+
+Un criterio de detención que suele utilizarse en establece lo siguiente: En cada punto de la malla se calcula un residuo $R$ como,
+
+\begin{equation}
+R = \sum a_{nb} \phi_{nb} + B - a_P \phi_P 
+\end{equation}
+
+La solución converge en la medida que $R$ tiende a cero. Más detalles del algoritmo se explican en \cite{patankar} y \cite{versteeg}. 

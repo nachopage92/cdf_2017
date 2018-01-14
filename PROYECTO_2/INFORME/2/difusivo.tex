@@ -1,0 +1,28 @@
+\subsubsection{Término difusivo}
+
+Análogo a la discretización anterior, se aproxima el término difusivo utilizando el método de volúmenes finitos.
+
+\begin{equation}
+\iiint\limits_{\Omega} G(\phi) \, dV = \iiint\limits_{\Omega} \nabla \cdot \vec{\nabla} \phi \, dV = \iint\limits_{\partial \Omega} \vec{\nabla} \phi \cdot \vect{n} \, dA 
+\end{equation}
+
+Donde,
+
+\begin{equation}
+\iint\limits_{\partial \Omega} \vec{\nabla} \phi \cdot \vect{n} \, dA \approx \dfrac{1}{Re} \left[ (\vec{\nabla} \phi)_e - (\vec{\nabla} \phi)_w \right] \Delta y + \dfrac{1}{Re} \left[ (\vec{\nabla} \phi)_n - (\vec{\nabla} \phi)_s \right] \Delta x
+\end{equation}
+
+\begin{equation}
+\begin{split}
+&(\vec{\nabla} \phi)_e = \frac{1}{\Delta x}(\phi_E-\phi_P) \\
+&(\vec{\nabla} \phi)_w = \frac{1}{\Delta x}(\phi_P-\phi_W) \\
+&(\vec{\nabla} \phi)_n = \frac{1}{\Delta y}(\phi_N-\phi_P) \\
+&(\vec{\nabla} \phi)_s = \frac{1}{\Delta y}(\phi_P-\phi_S)
+\end{split}
+\end{equation}
+
+Reordenando los términos se obtiene:
+
+\begin{equation}
+\iiint\limits_{\Omega} G(\phi) \, dV \approx \dfrac{1}{Re} \dfrac{\Delta y}{\Delta x} \left[ \phi_E - 2\phi_P + \phi_w \right] + \dfrac{1}{Re} \dfrac{\Delta x}{\Delta y} \left[ \phi_N - 2\phi_P + \phi_S \right]
+\end{equation}

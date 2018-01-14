@@ -1,0 +1,57 @@
+\subsubsection{Término convectivo}
+
+La discretización del término convectivo viene dado por
+\begin{equation}
+\iiint\limits_{\Omega} H(\phi) \, dV = \iiint\limits_{\Omega} \nabla \cdot \left( \vect{v} \phi \right) \, dV = \iint\limits_{\partial \Omega} \vect{v} \phi \cdot \vect{n} \, dA
+\end{equation}
+
+Aplicando el método de volumenes finitos resulta la siguiente expresión:
+
+\begin{equation}
+\iint\limits_{\partial \Omega} \vect{v} \phi \cdot \vect{n} \, dA \approx \left[ (\phi u)_e -(\phi u)_w \right] \Delta y + \left[ (\phi v)_n -(\phi v)_s \right] \Delta x
+\end{equation}
+
+Donde,
+
+\begin{equation}
+\begin{split}
+&(u)_e = \frac{1}{2}(u_E+u_P) \\
+&(u)_w = \frac{1}{2}(u_P+u_W) \\
+&(v)_n = \frac{1}{2}(v_N+v_P) \\
+&(v)_s = \frac{1}{2}(v_P+v_S)
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+&(\phi)_e = \frac{1}{2}(\phi_E+\phi_P) \\
+&(\phi)_w = \frac{1}{2}(\phi_P+\phi_W) \\
+&(\phi)_n = \frac{1}{2}(\phi_N+\phi_P) \\
+&(\phi)_s = \frac{1}{2}(\phi_P+\phi_S)
+\end{split}
+\end{equation}
+
+Luego,
+
+\begin{equation}
+\begin{split}
+\iiint\limits_{\Omega} H(\phi) \, dV \approx \left[ \dfrac{\phi_E+\phi_P}{2} \dfrac{u_E+u_P}{2} - \dfrac{\phi_P+\phi_W}{2} \dfrac{u_P+u_W}{2} \right] \Delta y \\
++ \left[ \dfrac{\phi_N+\phi_P}{2} \dfrac{v_N+v_P}{2} - \dfrac{\phi_P+\phi_S}{2} \dfrac{v_P+v_S}{2} \right] \Delta x 
+\end{split}
+\end{equation}
+
+Particularmente si se considera $\vect{H}(\vect{v}) = (h(u),h(v))$ se tiene que 
+
+\begin{equation}
+\begin{split}
+h(u) \approx \underbrace{ \dfrac{1}{\Delta x} \left[ \dfrac{u_E+u_P}{2} \dfrac{u_E+u_P}{2} - \dfrac{u_P+u_W}{2} \dfrac{u_P+u_W}{2} \right]}_{\partial u^2 / \partial x} \, \Delta x \, \Delta y  \\
++ \underbrace{ \dfrac{1}{\Delta y} \left[ \dfrac{u_N+u_P}{2} \dfrac{v_N+v_P}{2} - \dfrac{u_P+u_S}{2} \dfrac{v_P+v_S}{2} \right] }_{\partial uv / \partial y} \, \Delta x \, \Delta y
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+h(v) \approx \underbrace{ \dfrac{1}{\Delta x} \left[ \dfrac{v_E+v_P}{2} \dfrac{u_E+u_P}{2} - \dfrac{v_P+v_W}{2} \dfrac{u_P+u_W}{2} \right]}_{\partial uv / \partial x} \, \Delta x \, \Delta y \\
++ \underbrace{ \dfrac{1}{\Delta y} \left[ \dfrac{v_N+v_P}{2} \dfrac{v_N+v_P}{2} - \dfrac{\phi_P+\phi_S}{2} \dfrac{v_P+v_S}{2} \right] }_{\partial v^2 / \partial y} \, \Delta x \, \Delta y
+\end{split}
+\end{equation}
