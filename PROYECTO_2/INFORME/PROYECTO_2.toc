@@ -8,4 +8,10 @@
 \contentsline {subsection}{\numberline {3.1}Predicción del campo de velocidad no solenoidal $\bm {v}^*$}{7}
 \contentsline {subsubsection}{\numberline {3.1.1}Primer paso en la dirección $x$ ($\delta \overline {V}$)}{8}
 \contentsline {subsubsection}{\numberline {3.1.2}Segundo paso en la dirección $y$ ($\delta V$)}{8}
-\contentsline {paragraph}{Observación}{9}
+\contentsline {subsection}{\numberline {3.2}Corrección de la presión}{9}
+\contentsline {subsection}{\numberline {3.3}Correción del campo de velocidad}{10}
+\contentsline {section}{\numberline {4} Descripción del problema }{11}
+\contentsline {subsection}{\numberline {4.1}Dominio físico y numérico}{11}
+\contentsline {subsection}{\numberline {4.2}Algoritmo de resolución}{11}
+\contentsline {paragraph}{Condiciones de contorno}{12}
+\contentsline {section}{\numberline {5}Resultados}{14}

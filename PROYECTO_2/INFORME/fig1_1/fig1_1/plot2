@@ -1,0 +1,27 @@
+set terminal pdfcairo #size 600,400
+
+set pm3d map
+#set view map
+set pm3d interpolate 5,5
+
+set output 'velocity_profile.pdf'
+set key left top
+set title "Perfil de velocidad en x = Lx/2 \n Re = 2000 ; CFL = 0.05 ; Nx = 50 ; Ny = 10 "
+set xlabel 'y'
+set ylabel 'u'
+plot 'cfd_velocity_profile.dat' using 1:2 with points title 'Result. Vol. Finitos' , \
+ '' using 1:3 with lines title 'Result. Analítico'
+
+set output 'pressure_field.pdf'
+set title "Campo de presión P en cada volumen \n Re = 2000 ; CFL = 0.05 ; Nx = 50 ; Ny = 10 "
+set xlabel 'j-ésimo volumen'
+set ylabel 'i-ésimo volumen'
+splot 'cfd_pressure_field.dat' matrix notitle 
+
+set output 'velocity_field.pdf'
+set title "Campo de velocidad V \n Re = 2000 ; CFL = 0.05 ; Nx = 50 ; Ny = 10 "
+#set yrange [0:1]
+#set xrange [0:10]
+set xlabel 'x'
+set ylabel 'y'
+plot 'cfd_velocity_field.dat' using 1:2:3:4 with vectors head size 0.1,20,60 filled notitle

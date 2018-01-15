@@ -1,6 +1,6 @@
 \subsection{Predicción del campo de velocidad no solenoidal $\vect{v}^*$}
 
-La resolución de \ref{ecuación_gobernante} requiere del cálculo de un predictor de la velocidad $\vect{v}$ dado por:
+La resolución de (\ref{ecuación_gobernante}) requiere del cálculo de un predictor de la velocidad $\vect{v}$ dado por:
 
 \begin{equation}
 \dfrac{3 \vect{v}^{*} -4\vect{v}^n + \vect{v}^{n-1}}{2 \Delta t} + H(\vect{v}^{n+1}) = -\vec{\nabla} P + G(\vect{v}^{*})
@@ -80,7 +80,7 @@ El término $RHS^n$ se reemplaza por la ecuación la discretización planteada e
 
 \subsubsection{Segundo paso en la dirección $y$ ($\delta V$)}
 
-Se procede similar al paso anterior, con la diferencia de que no se aplica el método de volúmenes finitos, ya que se aplica sólo a un factor de la descomposición.  
+Se procede similar al paso anterior, con la diferencia de que no se recurre al método de volúmenes finitos, ya que se aplica sólo a un factor de la descomposición.  
 
 \begin{equation}
 (\delta \overline{V})_P - \dfrac{2 \, \Delta t}{3 \, Re} \dfrac{1}{(\Delta y)^2} \left( \delta V_E -2 \delta V_P + \delta V_W \right) = \delta \overline{V}_P
@@ -95,9 +95,9 @@ Reeordenando los términos para obtener un sistema de ecuaciones tridiagonal
 \end{split}
 \end{equation}
 
-\paragraph{Observación} los pasos anteriores se realizan tanto para $u$ como para $v$ ya que $\vec{v}=\left\{ u,v \right\}^T$ y $\delta V = \vec{v}^* - \vec{v}^n $. Cada paso de tiempo implica resolver 4 sistemas tridiagonales: 2 sistemas para la componente horizontal y 2 sistemas para la componente vertical de la velocidad. Finalmente se obtiene el predictor de la velocidad:
+Los pasos anteriores se realizan tanto para $u$ como para $v$ ya que $\vect{v}=\left\{ u,v \right\}^T$ y $\delta \vect{V} = \vect{v}^* - \vect{v}^n $. Cada paso de tiempo implica resolver 4 sistemas tridiagonales: 2 sistemas para la componente horizontal y 2 sistemas para la componente vertical de la velocidad. Finalmente se obtiene el predictor de la velocidad:
 
 \begin{equation}
-\vec{v}^* = \Big| \begin{matrix} u^* = u^n + \delta V_x \\ v^* = v^n + \delta V_y
+\vect{v}^* = \Big| \begin{matrix} u^* = u^n + \delta V_x \\ v^* = v^n + \delta V_y
 \end{matrix}
 \end{equation}

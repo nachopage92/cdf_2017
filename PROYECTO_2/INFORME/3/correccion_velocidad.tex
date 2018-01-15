@@ -1,9 +1,9 @@
 \subsection{Correción del campo de velocidad}
 
-Una vez resuelto la ecuación de Poisson se procede a corregir la velocidad predicha en el primer paso:
+La corrección de la presión es un proceso iterativo donde se vuelve a calcular el predictor de la velocidad $\vect{v}^*$. Como criterio de detención se reemplaza la ecuación (\ref{poisson}) en la ecuación de conservación de masa
 
 \begin{equation}
-\vec{v}^{n+1} = \vec{v} - \Delta t \nabla \phi
+\nabla \cdot \vect{v}^{n+1} = \nabla \cdot \vect{v}^* - \underbrace{ \dfrac{2 \, \Delta t}{3} \Delta \phi }_{\mbox{fuente de masa}} = 0
 \end{equation}
 
-Se recurre a la misma discretización utilizada en la ecuación (\ref{poisson_discreto}) para el campo auxiliar $\phi$.
+Cuando el término de fuente de masa es igual a cero entonces se puede decir que las variables iteradas convergen. Luego se corrige el campo de velocidad $\vec{v}^{n+1} = \vec{v} - \Delta t \nabla \phi$. Alcanzada la convergencia se pasa al siguiente pasa de tiempo hasta terminar la iteración al tiempo $T$.

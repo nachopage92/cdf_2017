@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/Debian) (preloaded format=xelatex 2017.9.20)  14 JAN 2018 14:04
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/Debian) (preloaded format=xelatex 2017.9.20)  15 JAN 2018 07:26
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -815,11 +815,7 @@ Package: listings 2015/06/04 1.6 (Carsten Heinz)
 (/usr/share/texlive/texmf-dist/tex/latex/esint/esint.sty
 Package: esint 
 \symlargesymbolsA=\mathgroup9
-) (./PROYECTO_2.aux
-
-LaTeX Warning: Label `inv' multiply defined.
-
-)
+) (./PROYECTO_2.aux)
 \openout1 = `PROYECTO_2.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 61.
@@ -838,7 +834,8 @@ LaTeX Font Info:    Checking defaults for EU1/lmr/m/n on input line 61.
 LaTeX Font Info:    ... okay on input line 61.
 LaTeX Font Info:    Checking defaults for T3/cmr/m/n on input line 61.
 LaTeX Font Info:    Try loading font information for T3+cmr on input line 61.
- (/usr/share/texmf/tex/latex/tipa/t3cmr.fd
+
+(/usr/share/texmf/tex/latex/tipa/t3cmr.fd
 File: t3cmr.fd 2001/12/31 TIPA font definitions
 )
 LaTeX Font Info:    ... okay on input line 61.
@@ -957,18 +954,48 @@ Underfull \hbox (badness 10000) in paragraph at lines 7--8
 ) [3] (./2/discretizacion_ecuaciones.tex (./2/navier_stokes.tex)
 (./2/espacial.tex (./2/convectivo.tex [4] [5]) (./2/difusivo.tex))) [6]
 (./3/procedimiento_computacional.tex (./3/temporal.tex)
-(./3/prediccion_velocidad.tex [7] [8])) [9] [10] (./PROYECTO_2.aux)
+(./3/prediccion_velocidad.tex [7] [8]) (./3/correccion_presion.tex [9])
+(./3/correccion_velocidad.tex)) [10] (./4/problema.tex
+Underfull \hbox (badness 10000) in paragraph at lines 13--14
 
-LaTeX Warning: There were multiply-defined labels.
+ []
 
- ) 
+File: malla.png Graphic file (type QTm)
+<use  "malla.png" >
+LaTeX Font Info:    Try loading font information for EU1+lmtt on input line 29.
+
+ (/usr/share/texlive/texmf-dist/tex/latex/euenc/eu1lmtt.fd
+File: eu1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+[11]
+File: diagrama_flujo_1.pdf Graphic file (type QTm)
+ <use  "diagrama_flujo_1.pdf" >) [12] [13] (./5/resultados.tex
+Underfull \hbox (badness 10000) in paragraph at lines 3--4
+
+ []
+
+File: ./fig1_1/fig1_1/velocity_field.pdf Graphic file (type QTm)
+<use  "./fig1_1/fig1_1/velocity_field.pdf" >
+File: ./fig1_1/fig1_1/pressure_field.pdf Graphic file (type QTm)
+
+<use  "./fig1_1/fig1_1/pressure_field.pdf" > [14]
+File: ./fig1_1/fig1_1/velocity_profile.pdf Graphic file (type QTm)
+
+<use  "./fig1_1/fig1_1/velocity_profile.pdf" >
+File: ./fig1_1/fig1_2/velocity_profile.pdf Graphic file (type QTm)
+
+<use  "./fig1_1/fig1_2/velocity_profile.pdf" >
+File: ./fig1_1/fig1_3/velocity_profile.pdf Graphic file (type QTm)
+
+<use  "./fig1_1/fig1_3/velocity_profile.pdf" >) [15] [16] [17]
+(./PROYECTO_2.aux) ) 
 Here is how much of TeX's memory you used:
- 25966 strings out of 493638
- 487716 string characters out of 6146796
- 549028 words of memory out of 5000000
- 29054 multiletter control sequences out of 15000+600000
- 16944 words of font info for 83 fonts, out of 8000000 for 9000
+ 26057 strings out of 493638
+ 489373 string characters out of 6146796
+ 549027 words of memory out of 5000000
+ 29117 multiletter control sequences out of 15000+600000
+ 16952 words of font info for 84 fonts, out of 8000000 for 9000
  1328 hyphenation exceptions out of 8191
- 48i,24n,53p,10371b,258s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 48i,24n,53p,10371b,357s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PROYECTO_2.pdf (10 pages).
+Output written on PROYECTO_2.pdf (17 pages).
