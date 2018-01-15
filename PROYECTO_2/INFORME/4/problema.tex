@@ -45,4 +45,10 @@ En la Figura \ref{algoritmo} se muestra un diagrama de flujo del código impleme
 \end{figure}
 \end{center}
 
-\paragraph{Condiciones de contorno} Establece condición de no deslizamiento en la cara inferior (i=2,j) y simetría en la cara superior (i=ny+1,j). Se imponen condición de presión en la entrada y salida de la tubería, de tal manera de poder calcular directamente $\Delta P$ y poder comparar el perfil de velocidad con la solución analítica de Poiseuille.
+\paragraph{Condiciones de contorno} Establece condición de no deslizamiento en la cara inferior (i=2,j) y simetría en la cara superior (i=ny+1,j). 
+
+\subparagraph{Condición de entrada y salida} Se plantean dos alternativas de resolución
+\begin{itemize}
+\item Se imponen condición de presión en la entrada y salida de la tubería, de tal manera de poder calcular directamente $\Delta P$ y poder comparar el perfil de velocidad con la solución analítica de Poiseuille.
+\item Se imponen condición periódica para obtener el perfil desarrollado
+\end{itemize}

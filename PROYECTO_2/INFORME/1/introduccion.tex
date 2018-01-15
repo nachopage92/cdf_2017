@@ -1,17 +1,10 @@
-\section{Resumen}
+\section{Introducción}
 
-La presente entrega tiene como finalidad exponer un avance en el desarrollo del Proyecto 2: \textit{Flujo monofásico newtoniano en un confluencia} de la Asignatura Dinámica de Fluidos Computacional. \\
+Se estudia el perfil de velocidad de un flujo dentro de una tubería de sección circular. Se emplea el método de volúmenes finitos para la resolución numérica y se contrastan los resultados con los resultados analíticos. \\
 
-Se estudia los esquemas de discretización flujos convectivos y difusivos, además  del esquema de integración temporal a utilizar en la implementación computacional, describiendose de manera general los pasos a seguir en la resolución de la ecuación de Navier-Stokes aplicado a un fluido newtoniano incompresible utilizando el método de volúmenes finitos, sin profundizar en los conceptos físicos propios del problema ni en los detalles de la programación.\\
+En la Sección 2 se estudian los esquemas de discretización flujos convectivos y difusivos, además del esquema de integración temporal a utilizar en la implementación computacional, describiendose de manera general los pasos a seguir en la resolución de la ecuación de Navier-Stokes aplicado a un fluido newtoniano incompresible (Sección 3).\\
 
-Se emplea la discretización de los flujos de convección y difusión propuesta por Patankar \cite{patankar}. El dominio físico se discretiza utilizando mallas desplazadas (\textit{staggered grid}). Para la integración temporal se emplea un esquema de Euler de orden 2 o esquema de Gear. Esta discretización permite integrar un intervalo de tiempo mediante el método de paso fraccionados o método ADI.\\
+Para la integración temporal se emplea un esquema de Euler de orden 2 o esquema de Gear. Esta discretización permite integrar un intervalo de tiempo mediante el método de paso fraccionados o método ADI. En la Sección 4 se nombran algunas consideración al momento de discretizar el dominio físico, para lo cual se utilizan mallas desplazadas (\textit{staggered grid}).  Como se busca obtener un flujo completamente desarrollado se plantea condiciones de borde adecuadas para obtener estas características: Se emplean condición de presión conocida en la entrada y salida del tubo; y condición de periodicidad.\\
 
-Se sigue un procedimiento de resolución que consiste en:
-\begin{enumerate}
-\item Cálculo de un predictor del campo de velocidad $\vec{v}^*$.
-\item Resolución de la ecuación de Poisson sobre el campo de presión.
-\item Corrección de campo de velocidad en el paso de tiempo $t_{n+1}$.
-\end{enumerate}
-
-Además se explica de manera acotada el procedimiento que se llevara a cabo en la entraga final, basandose en el desarrollo metodológico expuesto. 
+Los resultados númericos y teóricos se analizan en la Sección 5. Finalmente se realizan algunas observaciones en la Sección 6.
 

@@ -8,12 +8,11 @@ module variables
 
 !	NUMERO DE VOLUMENES
 !	(no considera nodos ficticios)
-	integer,parameter :: nx = 20
+	integer,parameter :: nx = 50
 	integer,parameter :: ny = 10
-	integer,parameter :: num_volumenes = ny*nx
 	
 !	DIMENSION DOMINIO
-	real(kind=8),parameter :: Lx = 2._8
+	real(kind=8),parameter :: Lx = 5._8
 	real(kind=8),parameter :: Ly = 1._8
 	 
 !	NUMERO DE REYNOLDS
@@ -35,10 +34,10 @@ module variables
 
 !	VELOCIDAD ENTRADA
 	real(kind=8),parameter :: &
-		& u_init = Re*gama/(rho*Ly)
+		& u_init = 2._8*Re*gama/(rho*Ly)
 
 !	NUMERO DE Courant-Friedrich-Levy
-	real(kind=8),parameter :: CFL = 0.05_8
+	real(kind=8),parameter :: CFL = 0.15_8
 	
 !	PASO DE TIEMPO
 	real(kind=8),parameter :: dt = CFL * dx / u_init
@@ -50,7 +49,7 @@ module variables
 	integer,parameter :: nt = T/dt
 	
 !	CRITERIO ESTABILIDAD
-	real(kind=8),parameter :: estabilidad = 1d-2
+	real(kind=8),parameter :: estabilidad = 1d-3
 	
 ! NUMERO PI
 	real(kind=8),parameter :: pi = 3.14159265359_8

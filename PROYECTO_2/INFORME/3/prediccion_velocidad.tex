@@ -71,7 +71,7 @@ Reemplazando $(**)$ y $(***)$ en la (\ref{primer_paso}) se obtiene:
 
 El término $RHS^n$ se reemplaza por la ecuación la discretización planteada en la Sección \ref{seccion2} y por el campo de presión definido arbitrariamente a \textit{priori}. La ecuación anterior se traduce en resolver un sistemas de ecuaciones tridiagonal dado por,
 
-\begin{equation}
+\begin{equation} \label{hola}
 \begin{split}
 \left( - \dfrac{2 \, \Delta t}{3 \, Re} \dfrac{\Delta y}{\Delta x}  \right) \delta \overline{V}_E + \left( \Delta x \, \Delta y + \dfrac{4 \, \Delta t}{3 \, Re} \dfrac{\Delta y}{\Delta x}  \right) \delta \overline{V}_P + \left( - \dfrac{2 \, \Delta t}{3 \, Re} \dfrac{\Delta y}{\Delta x}  \right) \delta \overline{V}_W \\
  = \iiint_{\Omega_{cv}} RHS^n \, dV
@@ -101,3 +101,5 @@ Los pasos anteriores se realizan tanto para $u$ como para $v$ ya que $\vect{v}=\
 \vect{v}^* = \Big| \begin{matrix} u^* = u^n + \delta V_x \\ v^* = v^n + \delta V_y
 \end{matrix}
 \end{equation}
+
+\paragraph{Observación} En la ecuación (\ref{hola}) se deben considerar los esfuerzos cortantes debido las fuerzas externas. En caso de haber una paredse debe considerar la condición de no deslizamiento. En este trabajo se implementó una aproximación lineal de la fuerza utilizando el procedimiento explicado por Versteeg \cite{versteeg}   

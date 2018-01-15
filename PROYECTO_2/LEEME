@@ -1,0 +1,20 @@
+CFD_POISEUILLE_1: posee el problema del perfil de
+POISEUILLE con condiciones de borde periódicas. 
+
+CFD_POISEUILLE_2: posee el problema del perfil de
+POISEUILLE con condiciones de presión en la entrada
+y en la salida.
+
+El programa genera una animación (REQUIERE TENER 
+INSTALADO imagemagick: sudo apt-get install 
+imagemagick) y una imagen en formato pdf cuando
+se logra el estado estacionario
+
+DENTRO DE LA CARPETA EJECUTAR (para ambas carpetas)
+::::::::::::::::::::::::::::::::
+::	make compilar_modulo			::
+::	make compilar_subrutinas	::
+::	make											::
+::::::::::::::::::::::::::::::::
+
+Correr el ejecutable 'PROYECTO2_IGNACIO_APABLAZA'

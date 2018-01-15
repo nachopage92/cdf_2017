@@ -15,7 +15,8 @@ all: T2.f90
 	$(SUBDIR)/CORRECCION_PRESION.o \
 	$(SUBDIR)/CORRECCION_VELOCIDAD.o \
 	$(SUBDIR)/EXPORTAR_DATOS.o \
-	T2.f90 
+	$(SUBDIR)/EXPORTAR_DATOS_2.o \
+	T2.f90 -o PROYECTO2_IGNACIO_APABLAZA
 
 compilar_subrutinas:
 	cd ./subrutinas && $(MAKE)

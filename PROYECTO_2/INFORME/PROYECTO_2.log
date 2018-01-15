@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/Debian) (preloaded format=xelatex 2017.9.20)  15 JAN 2018 07:26
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/Debian) (preloaded format=xelatex 2017.9.20)  15 JAN 2018 09:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -931,12 +931,6 @@ Overfull \hbox (22.05037pt too wide) in paragraph at lines 65--78
 \openout3 = `PROYECTO_2.toc'.
 
  [2] (./1/introduccion.tex
-Overfull \hbox (9.8007pt too wide) in paragraph at lines 3--4
-\EU1/lmr/m/n/12 Proyecto 2: \EU1/lmr/m/it/12 Flujo monofásico newtoniano en un 
-confluencia \EU1/lmr/m/n/12 de la Asignatura Dinámica
- []
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 3--4
 
  []
@@ -974,11 +968,22 @@ Underfull \hbox (badness 10000) in paragraph at lines 3--4
 
  []
 
+
+Underfull \hbox (badness 10000) in paragraph at lines 5--6
+
+ []
+
 File: ./fig1_1/fig1_1/velocity_field.pdf Graphic file (type QTm)
 <use  "./fig1_1/fig1_1/velocity_field.pdf" >
+File: ./fig1_1/velocity_field.pdf Graphic file (type QTm)
+
+<use  "./fig1_1/velocity_field.pdf" > [14]
 File: ./fig1_1/fig1_1/pressure_field.pdf Graphic file (type QTm)
 
-<use  "./fig1_1/fig1_1/pressure_field.pdf" > [14]
+<use  "./fig1_1/fig1_1/pressure_field.pdf" >
+File: ./fig1_1/pressure_field.pdf Graphic file (type QTm)
+
+<use  "./fig1_1/pressure_field.pdf" > [15]
 File: ./fig1_1/fig1_1/velocity_profile.pdf Graphic file (type QTm)
 
 <use  "./fig1_1/fig1_1/velocity_profile.pdf" >
@@ -987,15 +992,49 @@ File: ./fig1_1/fig1_2/velocity_profile.pdf Graphic file (type QTm)
 <use  "./fig1_1/fig1_2/velocity_profile.pdf" >
 File: ./fig1_1/fig1_3/velocity_profile.pdf Graphic file (type QTm)
 
-<use  "./fig1_1/fig1_3/velocity_profile.pdf" >) [15] [16] [17]
-(./PROYECTO_2.aux) ) 
+<use  "./fig1_1/fig1_3/velocity_profile.pdf" >) [16]
+Overfull \vbox (3.63673pt too high) has occurred while \output is active []
+
+
+[17] (./6/conclusiones.tex
+Underfull \hbox (badness 10000) in paragraph at lines 3--4
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 5--6
+
+ []
+
+
+Overfull \hbox (3.42473pt too wide) in paragraph at lines 7--8
+[]\EU1/lmr/m/n/12 Sin embargo utilizando esta condición se observa que se acerc
+a más al perfil parabólico
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 7--8
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 9--10
+
+ []
+
+)
+Underfull \hbox (badness 10000) in paragraph at lines 11--126
+
+ []
+
+[18] [19] (./PROYECTO_2.aux) ) 
 Here is how much of TeX's memory you used:
- 26057 strings out of 493638
- 489373 string characters out of 6146796
- 549027 words of memory out of 5000000
- 29117 multiletter control sequences out of 15000+600000
+ 26068 strings out of 493638
+ 489550 string characters out of 6146796
+ 549028 words of memory out of 5000000
+ 29123 multiletter control sequences out of 15000+600000
  16952 words of font info for 84 fonts, out of 8000000 for 9000
  1328 hyphenation exceptions out of 8191
  48i,24n,53p,10371b,357s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PROYECTO_2.pdf (17 pages).
+Output written on PROYECTO_2.pdf (19 pages).

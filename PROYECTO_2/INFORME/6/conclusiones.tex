@@ -1,0 +1,11 @@
+\section{Conclusiones}
+
+Los resultados números se contrastaron con los resultados analíticos del perfil de velocidad de un fluido incompresible viscoso que fluye en una tubería de sección circular. \\
+
+Se comparan los resultados al imponer dos tipos de condición de contorno para la entrada y salida: Imposición de presión y flujo periódico. Se observa que para la condición de flujo periódico se obtiene un perfil con componente vertical prácticamente nulo, miestras que para la condición de presión existen componentes considerables en esta dirección. \\
+
+Sin embargo utilizando esta condición se observa que se acerca más al perfil parabólico teórico que en el caso de flujo periodico. De está manera se puede ver cómo el problema presenta una sensibilidad a la elección de esta condición. Los tiempo de cálculo empleado con la condición periódica son mayores que las de la condición de presión: a ver las animaciones del flujo se observa que este \textit{oscila} a lo largo del tubo hasta lograr ser estacionario. Estos cambios repentinos requieren de rápidos cambios en la presión, por lo que se requieren de más iteraciones (en este caso, iteraciones de $\phi$) para lograr la convergencia de las variables. \\ 
+
+El valor obtenido en la presión en ambos casos distan con creces, lo cual no tiene mayor relevancia al momento de resolver las ecuaciones que gobiernan al fluido ya que lo que influye es el gradiente de presión y no la presión en sí.\\
+
+En la resolución de la ecuación de Poisson se utilizó una simplificación del operador laplaciano de $\phi$: Se omiten los valores vecinos del valor central. De esta manera se evita imponer condición de contorno para dicha variable, ya que se entiende que la presión es una función implícita de la velocidad, por lo que al imponer condición en la velocidad se imponen implícitamente para la presión. Sin embargo como se pudo apreciar, el resultado depende fuertemente de la condición de contorno, por lo que intentar otra aproximación de esta operación puede mejorar los resultados. \\

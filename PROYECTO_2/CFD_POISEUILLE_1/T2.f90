@@ -42,7 +42,15 @@ program T2_CDF_2017_2S
 			real(kind=8),dimension(ny+2,nx+2),intent(inout) :: u_0,u_1,v_0,v_1
 		end subroutine		
 		
-		subroutine EXPORTAR_DATOS(x,y,u,v,P)
+		subroutine EXPORTAR_DATOS(x,y,u,v,P,k)
+			use variables
+			integer,intent(in)::k
+			real(kind=8),dimension(nx+2),intent(in) :: x
+			real(kind=8),dimension(ny+2),intent(in) :: y
+			real(kind=8),dimension(ny+2,nx+2),intent(in) :: u,v,P
+		end subroutine
+		
+		subroutine EXPORTAR_DATOS_2(x,y,u,v,P)
 			use variables
 			real(kind=8),dimension(nx+2),intent(in) :: x
 			real(kind=8),dimension(ny+2),intent(in) :: y
@@ -55,7 +63,7 @@ program T2_CDF_2017_2S
 	
 	integer :: i,j,k,contador,niter
 	
-	real(kind=8) :: R
+	real(kind=8) :: R,start,finish
 	
 	real(kind=8),dimension(nx+2) :: x
 	
@@ -68,20 +76,32 @@ program T2_CDF_2017_2S
 	
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::
 	
+	call cpu_time(start)
+	
+	PRINT*, 'PROYECTO 2 - DINAMICA DE FLUIDOS COMPUTACIONAL'
+	PRINT*, 'IGNACIO APABLAZA BENAVIDES'
+	PRINT*, 'ROL. 201141007-6 ; ignacio.apablaza@alumnos.usm.cl'
+	PRINT*, ''
+	PRINT*, ''
+	PRINT*, ''
+	
 	
 !	PREAMBULO 
 
 !	MALLA PRINCIPAL
-	x = (/ ( (dfloat(i)-1.0_8)*dx,i=1,nx+2 ) /)
-	y = (/ ( (dfloat(i)-1.0_8)*dy,i=1,ny+2 ) /) 
+	x = (/ ( (dfloat(i)-1.5_8)*dx,i=1,nx+2 ) /)
+	y = (/ ( (dfloat(i)-1.5_8)*dy,i=1,ny+2 ) /) 
+
 
 !	CAMPO DE VELOCIDAD INICIAL
 	call CONDICIONES_INICIALES(u_0,v_0)
 	call CONDICIONES_INICIALES(u_1,v_1)
 
+
 !	CAMPO DE PRESION INICIAL
 !		en t_(n)
 	P = 0._8
+
 	
 !	IMPOSICION DE LAS CONDICIONES DE CONTORNO
 	call CONDICIONES_CONTORNO(u_0,v_0)
@@ -118,6 +138,8 @@ program T2_CDF_2017_2S
 !				criterio2 : limite maximo de iteraciones
 			if ( R .lt. criterio1 .or. &
 			 &	niter .gt. criterio2 ) then
+				print*, R,niter,k,nt
+				call EXPORTAR_DATOS(x,y,u_1,v_1,P,k)
 				EXIT
 			end if
 			
@@ -135,7 +157,6 @@ program T2_CDF_2017_2S
 !			alcanzada la estabilidad en el tiempo
 		if ( (maxval(u_1-u_0) .lt. estabilidad) .and. &
 		& maxval(v_1-v_0) .lt. estabilidad ) then
-			call EXPORTAR_DATOS(x,y,u_1,v_1,P)
 			exit
 		end if
 		
@@ -144,7 +165,22 @@ program T2_CDF_2017_2S
 		call CONDICIONES_CONTORNO(u_1,v_1)
 		
 	end do
-			
+	
+!	REQUIERE TENER INSTALADO imagemagick
+!	sudo apt-get install imagemagick
+	call system('cd ./animacion1/ && convert -delay 1'//&
+	&' -loop 0 *.png animacion1.gif && rm *.png && rm *.dat')
+	call system('cd ./animacion2/ && convert -delay 1'//&
+	&' -loop 0 *.png animacion2.gif && rm *.png && rm *.dat')
+	call system('cd ./animacion3/ && convert -delay 1'//&
+	&' -loop 0 *.png animacion3.gif && rm *.png && rm *.dat')
+
+	call EXPORTAR_DATOS_2(x,y,u_1,v_1,P)
+	
+	call cpu_time(finish)
+	
+	PRINT*, '----------------------------------'
+	PRINT*, 'Tiempo de calculo' , finish - start , 'segundos'
 
 !!:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
